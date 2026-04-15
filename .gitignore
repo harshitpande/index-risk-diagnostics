@@ -1,0 +1,33 @@
+﻿# Python environment
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Trained model files — share via Google Drive link in README
+*.keras
+*.h5
+
+# All data files — reproduced by running pipeline
+data/
+
+# Generated outputs — reproduced by running pipeline
+outputs/
+
+# Logs — runtime output
+logs/
+
+# Windows artifacts
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+*.code-workspace
+
+# Environment variables
+.env
+
+# Jupyter
+.ipynb_checkpoints/
