@@ -300,8 +300,9 @@ Copyright (c) 2026 Harshit Pande
 ## Author
 
 **Harshit Pande**
+
 Exploring finance and consulting analytics | Python, SQL | Driving business impact through data
 
 [GitHub](https://github.com/harshitpande) |
-[Medium](URL) |
-[LinkedIn](URL)
+[Medium](https://medium.com/@harsh7431) |
+[LinkedIn](https://www.linkedin.com/in/harshit-pande-846a69192/)
