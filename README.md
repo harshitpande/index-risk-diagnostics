@@ -278,10 +278,6 @@ schtasks /create /xml schedule_task.xml /tn "index-risk-diagnostics-daily"
 4. **India-specific:** Trained and calibrated on NIFTY 50 data. Performance
    on other indices requires retraining and recalibration.
 
-5. **GRU volatility integration:** The two-stage architecture (GRU vol
-   forecast as input to regime classifier) is partially implemented.
-   Full integration is planned for a future release.
-
 ---
 
 ## Medium Article
@@ -304,8 +300,7 @@ Copyright (c) 2026 Harshit Pande
 ## Author
 
 **Harshit Pande**
-Building institutional-grade risk diagnostic systems for emerging market
-equity indices.
+Exploring finance and consulting analytics | Python, SQL | Driving business impact through data
 
 [GitHub](https://github.com/harshitpande) |
 [Medium](URL) |
