@@ -482,8 +482,7 @@ context of financial risk modeling with constrained historical data.
 
 ### 7.2 GRU Cell Formulation
 
-Given input vector $\mathbf{x}_t$ and previous hidden state
-$\mathbf{h}_{t-1}$:
+Given input vector `x_t` and previous hidden state `h_{t-1}`:
 
 ```
 Reset gate:
@@ -575,8 +574,8 @@ $$\hat{\mathbf{p}}_{t+1} = P\left(\text{Regime}_{t+1} = k \mid
 \tilde{\mathbf{x}}_{t-59}, \ldots, \tilde{\mathbf{x}}_t\right),
 \quad k \in \{0, 1, 2, 3\}$$
 
-where the output vector `p_hat_{t+1}` is in R^4 with all four
-probabilities summing to 1.
+where the output vector `p_hat_{t+1}` is a four-element probability vector
+with all four probabilities summing to 1.
 
 ### 8.2 Architecture
 
