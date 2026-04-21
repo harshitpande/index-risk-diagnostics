@@ -1,0 +1,151 @@
+{
+  "tier1": {
+    "tier": "Tier1_OutOfSample",
+    "period": "2024-01-01 to present",
+    "n_total": 567,
+    "regime_counts": {
+      "0": 222,
+      "1": 325,
+      "2": 20
+    },
+    "overall_accuracy": 0.8413,
+    "overall_accuracy_caveat": "Dominated by Calm+Pullback (97.8%). Not primary metric.",
+    "transition_accuracy_exact": 0.9311,
+    "transition_accuracy_direction": 0.9311,
+    "per_class": {
+      "Calm": {
+        "n": 222,
+        "precision": 0.8929,
+        "recall": 0.7883,
+        "f1": 0.8373,
+        "caveat": "n=222"
+      },
+      "Pullback": {
+        "n": 325,
+        "precision": 0.8202,
+        "recall": 0.9262,
+        "f1": 0.8699,
+        "caveat": "n=325"
+      },
+      "Stress": {
+        "n": 20,
+        "precision": 0.25,
+        "recall": 0.05,
+        "f1": 0.0833,
+        "caveat": "LOW CONFIDENCE -- n=20 (interpret with caution)"
+      },
+      "Crisis": {
+        "n": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "caveat": "NOT EVALUABLE -- n=0 in test set (structural, not model failure)"
+      }
+    }
+  },
+  "tier2": {
+    "tier": "Tier2_InSampleConsistency",
+    "period": "2007-2026",
+    "caveat": "In-sample fit check only. Not a generalization test.",
+    "regime_counts_full": {
+      "0": 1137,
+      "1": 2261,
+      "2": 632,
+      "3": 466
+    },
+    "stress_crisis_recall_episodes": 0.4007,
+    "episodes_captured": "6/7",
+    "episode_detail": {
+      "GFC_Acute_Crash": {
+        "status": "CAPTURED",
+        "n_total": 114,
+        "n_stress_crisis": 114,
+        "n_crisis": 114,
+        "pct_elevated": 100.0,
+        "lead_days": 28
+      },
+      "Euro_Crisis": {
+        "status": "CAPTURED",
+        "n_total": 99,
+        "n_stress_crisis": 96,
+        "n_crisis": 29,
+        "pct_elevated": 97.0,
+        "lead_days": 0
+      },
+      "Taper_Tantrum": {
+        "status": "CAPTURED",
+        "n_total": 91,
+        "n_stress_crisis": 22,
+        "n_crisis": 1,
+        "pct_elevated": 24.2,
+        "lead_days": 0
+      },
+      "ILandFS_NBFC": {
+        "status": "MISSED",
+        "n_total": 79,
+        "n_stress_crisis": 0,
+        "n_crisis": 0,
+        "pct_elevated": 0.0,
+        "lead_days": 0
+      },
+      "COVID_Crash": {
+        "status": "CAPTURED",
+        "n_total": 21,
+        "n_stress_crisis": 10,
+        "n_crisis": 8,
+        "pct_elevated": 47.6,
+        "lead_days": 0
+      },
+      "COVID_Recovery_Vol": {
+        "status": "CAPTURED",
+        "n_total": 158,
+        "n_stress_crisis": 66,
+        "n_crisis": 55,
+        "pct_elevated": 41.8,
+        "lead_days": 15
+      },
+      "Post_COVID_Macro_Stress": {
+        "status": "CAPTURED",
+        "n_total": 279,
+        "n_stress_crisis": 29,
+        "n_crisis": 0,
+        "pct_elevated": 10.4,
+        "lead_days": 0
+      }
+    }
+  },
+  "threshold_calibration": {
+    "sweep_shape": [
+      63,
+      12
+    ],
+    "recommendations": {
+      "6.5:1 (empirical)": {
+        "n": 1,
+        "sustained_thresh": 0.3,
+        "override_thresh": 0.5,
+        "recall": 0.3,
+        "precision": 0.4615,
+        "f1": 0.3636
+      },
+      "10:1  (training)": {
+        "n": 1,
+        "sustained_thresh": 0.3,
+        "override_thresh": 0.5,
+        "recall": 0.3,
+        "precision": 0.4615,
+        "f1": 0.3636
+      }
+    },
+    "recommendation_final": "6.5:1 (empirical)",
+    "rationale": "Recall delta < 0.02. Empirically grounded 6.5:1 preferred: same detection, lower false alarm cost.",
+    "recall_delta": 0.0
+  },
+  "methodology_notes": {
+    "evaluation_design": "Dual-tier evaluation. Tier 1 is the only honest out-of-sample generalization test (2024-present). Tier 2 is an in-sample consistency check across historical stress episodes (2007-2026). Models are frozen -- no retraining.",
+    "primary_metric": "Crisis recall, then Stress recall. Overall accuracy is explicitly de-prioritized: the test set is 97.8% Calm+Pullback.",
+    "crisis_recall_caveat": "Crisis recall cannot be evaluated on the Tier 1 test set because the 2024-present period contains 0 Crisis-regime days. Structural property of the test window, not a model failure.",
+    "threshold_calibration": "Early warning thresholds calibrated via precision-recall sweep across n=1 to 7 consecutive days. Hamilton (1989) regime persistence theory supports n=2-3 as theoretically grounded.",
+    "bodie_karasan_bogle": "Evaluation follows Bodie's risk-first framing. Karasan's hybrid modeling discipline: Stress and Crisis recall are primary criteria. Bogle's humility: no accuracy number reported without qualification."
+  }
+}
