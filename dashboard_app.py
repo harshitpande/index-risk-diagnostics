@@ -68,8 +68,10 @@ st.markdown("""
     [data-testid="stSidebar"] {
         background-color: #1a1a2e !important;
     }
-    [data-testid="stSidebar"] * {
-        color: #dde0f0 !important;
+    [data-testid="stSidebar"] p,
+    [data-testid="stSidebar"] span,
+    [data-testid="stSidebar"] label {
+        color: #dde0f0;
     }
     [data-testid="stSidebar"] .stMarkdown h2,
     [data-testid="stSidebar"] .stMarkdown h3 {
