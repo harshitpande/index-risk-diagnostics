@@ -296,18 +296,18 @@ def render_sidebar(cs):
         else:
             st.markdown(
                 '<div class="signal-none">'
-                '<h3 style="color:#2ecc71;margin:0">✓ NO SIGNAL</h3>'
-                '<p style="color:#27ae60;margin:4px 0">Below signal threshold</p>'
+                '<h3 style="color:#2ecc71;margin:0;font-size:16px">✓ NO SIGNAL</h3>'
+                '<p style="color:#2ecc71;margin:4px 0;font-size:13px">Below signal threshold</p>'
                 '</div>',
                 unsafe_allow_html=True
             )
 
         st.markdown("---")
-        st.markdown(f"**Last Update:** {cs['date']}")
-        st.markdown(f"**NIFTY Close:** {cs['close']:,.0f}")
-        st.markdown(f"**Drawdown:** {cs['drawdown']:.1%}")
-        st.markdown(f"**GARCH Vol:** {cs['garch_vol']:.1f}% ann.")
-        st.markdown(f"**Realized Vol:** {cs['realized_vol']:.1f}% ann.")
+        st.markdown(f"<span style='color:#dde0f0'>**Last Update:** {cs['date']}</span>", unsafe_allow_html=True)
+        st.markdown(f"<span style='color:#dde0f0'>**NIFTY Close:** {cs['close']:,.0f}</span>", unsafe_allow_html=True)
+        st.markdown(f"<span style='color:#dde0f0'>**Drawdown:** {cs['drawdown']:.1%}</span>", unsafe_allow_html=True)
+        st.markdown(f"<span style='color:#dde0f0'>**GARCH Vol:** {cs['garch_vol']:.1f}% ann.</span>", unsafe_allow_html=True)
+        st.markdown(f"<span style='color:#dde0f0'>**Realized Vol:** {cs['realized_vol']:.1f}% ann.</span>", unsafe_allow_html=True)
 
         st.markdown("---")
         st.markdown("**GRU Regime Probabilities**")
@@ -327,7 +327,7 @@ def render_sidebar(cs):
             st.markdown(
                 f'<div style="margin:4px 0">'
                 f'<span style="color:{color};font-size:12px">{label}: {prob:.3f}</span>'
-                f'<div style="background:#222244;border-radius:4px;height:6px;margin-top:2px">'
+                f'<div style="background:#444466;border-radius:4px;height:6px;margin-top:2px">'
                 f'<div style="background:{color};width:{bar_width}%;height:6px;border-radius:4px"></div>'
                 f'</div></div>',
                 unsafe_allow_html=True
