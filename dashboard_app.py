@@ -50,31 +50,118 @@ st.set_page_config(
 # ─────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-    .main { background-color: #0d0d1a; }
-    .block-container { padding-top: 1rem; padding-bottom: 1rem; }
+    /* ── Base & Layout ─────────────────────────────────────────── */
+    html, body, [data-testid="stAppViewContainer"],
+    [data-testid="stApp"] {
+        background-color: #f8f9fb !important;
+        color: #1a1a2e !important;
+    }
+
+    [data-testid="stMain"], .main, .block-container {
+        background-color: #f8f9fb !important;
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+        max-width: 100% !important;
+    }
+
+    /* ── Sidebar ────────────────────────────────────────────────── */
+    [data-testid="stSidebar"] {
+        background-color: #1a1a2e !important;
+    }
+    [data-testid="stSidebar"] * {
+        color: #dde0f0 !important;
+    }
+    [data-testid="stSidebar"] .stMarkdown h2,
+    [data-testid="stSidebar"] .stMarkdown h3 {
+        color: #7b89d4 !important;
+    }
+
+    /* ── Headings ───────────────────────────────────────────────── */
+    h1, h2, h3, h4 {
+        color: #1a1a2e !important;
+        font-weight: 600 !important;
+    }
+
+    /* ── Tabs ───────────────────────────────────────────────────── */
+    [data-testid="stTabs"] [role="tab"] {
+        color: #1a1a2e !important;
+        font-weight: 500;
+    }
+    [data-testid="stTabs"] [role="tab"][aria-selected="true"] {
+        color: #7b89d4 !important;
+        border-bottom: 2px solid #7b89d4 !important;
+    }
+
+    /* ── Metric Cards ───────────────────────────────────────────── */
     .metric-card {
-        background: #11112a;
-        border: 1px solid #222244;
-        border-radius: 8px;
+        background: #ffffff;
+        border: 1px solid #e0e4f0;
+        border-radius: 10px;
         padding: 16px;
         text-align: center;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
     }
+
+    /* ── Signal Cards ───────────────────────────────────────────── */
     .signal-active {
-        background: #2d0a0a;
+        background: #fff0f0;
         border: 2px solid #e74c3c;
-        border-radius: 8px;
+        border-radius: 10px;
         padding: 16px;
         text-align: center;
     }
     .signal-none {
-        background: #0a2d0a;
+        background: #f0fff4;
         border: 2px solid #2ecc71;
-        border-radius: 8px;
+        border-radius: 10px;
         padding: 16px;
         text-align: center;
     }
-    h1, h2, h3 { color: #dde0f0; }
-    .stTabs [data-baseweb="tab"] { color: #dde0f0; }
+
+    /* ── Dataframes & Tables ────────────────────────────────────── */
+    [data-testid="stDataFrame"] {
+        background: #ffffff !important;
+        border-radius: 8px;
+        border: 1px solid #e0e4f0;
+    }
+    [data-testid="stDataFrame"] * {
+        color: #1a1a2e !important;
+    }
+
+    /* ── Markdown text ──────────────────────────────────────────── */
+    .stMarkdown p, .stMarkdown li {
+        color: #1a1a2e !important;
+    }
+
+    /* ── Metrics ────────────────────────────────────────────────── */
+    [data-testid="stMetric"] label {
+        color: #555577 !important;
+        font-size: 0.85rem !important;
+    }
+    [data-testid="stMetric"] [data-testid="stMetricValue"] {
+        color: #1a1a2e !important;
+        font-weight: 700 !important;
+    }
+
+    /* ── Dividers ───────────────────────────────────────────────── */
+    hr {
+        border-color: #e0e4f0 !important;
+    }
+
+    /* ── Mobile responsiveness ──────────────────────────────────── */
+    @media (max-width: 768px) {
+        .block-container {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+        }
+        h1 { font-size: 1.4rem !important; }
+        h2 { font-size: 1.2rem !important; }
+        h3 { font-size: 1rem !important; }
+        .metric-card { padding: 10px !important; }
+        [data-testid="stMetric"] [data-testid="stMetricValue"] {
+            font-size: 1.2rem !important;
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
