@@ -287,23 +287,10 @@ def render_sidebar(cs):
 
         # Signal status
         if cs['active_signals']:
-            st.markdown(
-                f'<div class="signal-active">'
-                f'<h3 style="color:#e74c3c;margin:0">⚠ SIGNAL ACTIVE</h3>'
-                f'<p style="color:#ff6b6b;margin:4px 0">'
-                f'{" | ".join(cs["active_signals"])}</p>'
-                f'</div>',
-                unsafe_allow_html=True
-            )
+            st.error(f"⚠ SIGNAL ACTIVE\n\n{' | '.join(cs['active_signals'])}")
         else:
-            st.markdown(
-                '<div style="background:#0a2d0a;border:2px solid #2ecc71;border-radius:10px;padding:16px;text-align:center">'
-                '<h3 style="color:#2ecc71;margin:0;font-size:16px">✓ NO SIGNAL</h3>'
-                '<p style="color:#ffffff;margin:4px 0;font-size:13px">Below signal threshold</p>'
-                '</div>',
-                unsafe_allow_html=True
-            )
-
+            st.success("✓ NO SIGNAL\n\nBelow signal threshold")
+            
         st.markdown("---")
         st.markdown(f"<span style='color:#dde0f0'>**Last Update:** {cs['date']}</span>", unsafe_allow_html=True)
         st.markdown(f"<span style='color:#dde0f0'>**NIFTY Close:** {cs['close']:,.0f}</span>", unsafe_allow_html=True)
@@ -644,19 +631,10 @@ def render_early_warning(ews, cs):
     for col, (sig, label, desc) in zip([c1, c2, c3], signal_configs):
         with col:
             active = bool(latest.get(sig, 0))
-            color  = '#e74c3c' if active else '#2ecc71'
-            status = 'ACTIVE' if active else 'INACTIVE'
-            st.markdown(
-                f'<div style="background:{"#2d0a0a" if active else "#0a2d0a"};'
-                f'border:2px solid {color};border-radius:8px;padding:12px;text-align:center">'
-                f'<h4 style="color:#ffffff;margin:0">{label}</h4>'
-                f'<p style="color:{color};font-size:18px;font-weight:bold;margin:4px 0">'
-                f'{status}</p>'
-                f'<p style="color:#cccccc;font-size:10px;margin:0">{desc}</p>'
-                f'</div>',
-                unsafe_allow_html=True
-            )
-
+            if active:
+                st.error(f"⚠ {label}\n\nACTIVE\n\n{desc}")
+            else:
+                st.success(f"✓ {label}\n\nINACTIVE\n\n{desc}")
     st.markdown("---")
 
     # Composite stress probability chart
