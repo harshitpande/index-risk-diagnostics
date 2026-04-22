@@ -297,7 +297,7 @@ def render_sidebar(cs):
             st.markdown(
                 '<div style="background:#0a2d0a;border:2px solid #2ecc71;border-radius:10px;padding:16px;text-align:center">'
                 '<h3 style="color:#2ecc71;margin:0;font-size:16px">✓ NO SIGNAL</h3>'
-                '<p style="color:#aaffaa;margin:4px 0;font-size:13px">Below signal threshold</p>'
+                '<p style="color:#ffffff;margin:4px 0;font-size:13px">Below signal threshold</p>'
                 '</div>',
                 unsafe_allow_html=True
             )
@@ -650,7 +650,7 @@ def render_early_warning(ews, cs):
                 f'<h4 style="color:{color};margin:0">{label}</h4>'
                 f'<p style="color:{color};font-size:18px;font-weight:bold;margin:4px 0">'
                 f'{status}</p>'
-                f'<p style="color:#888899;font-size:10px;margin:0">{desc}</p>'
+                f'<p style="color:#cccccc;font-size:10px;margin:0">{desc}</p>'
                 f'</div>',
                 unsafe_allow_html=True
             )
