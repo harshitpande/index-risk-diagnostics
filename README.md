@@ -282,7 +282,7 @@ schtasks /create /xml schedule_task.xml /tn "index-risk-diagnostics-daily"
 
 ## Medium Article
 
-📖 **[Full technical write-up on Medium](URL)**
+📖 **[Full technical write-up on Medium](https://medium.com/@harsh7431/nifty-50-equity-risk-diagnostics-a-gjr-garch-and-gru-based-early-warning-system-7a6cc2ac886a)**
 
 The article explains every design decision, threshold calibration,
 theoretical foundation, and live diagnostic results from April 9, 2026.
