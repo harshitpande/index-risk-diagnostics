@@ -295,9 +295,9 @@ def render_sidebar(cs):
             )
         else:
             st.markdown(
-                '<div class="signal-none">'
+                '<div style="background:#0a2d0a;border:2px solid #2ecc71;border-radius:10px;padding:16px;text-align:center">'
                 '<h3 style="color:#2ecc71;margin:0;font-size:16px">✓ NO SIGNAL</h3>'
-                '<p style="color:#2ecc71;margin:4px 0;font-size:13px">Below signal threshold</p>'
+                '<p style="color:#aaffaa;margin:4px 0;font-size:13px">Below signal threshold</p>'
                 '</div>',
                 unsafe_allow_html=True
             )
