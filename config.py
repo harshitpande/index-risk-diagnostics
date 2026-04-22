@@ -161,11 +161,11 @@ REGIME_VALIDATION_SPLIT = 0.2
 
 # ── Dashboard Theme ──────────────────────────────────────────
 # Used by visualization/dashboards.py and dashboard_app.py
-DARK_BG  = "#0d0d1a"
-PANEL_BG = "#11112a"
-GRID_CLR = "#222244"
-TEXT_CLR = "#dde0f0"
-ACCENT   = "#7b89d4"
+DARK_BG  = "#ffffff"
+PANEL_BG = "#f0f2f6"
+GRID_CLR = "#dddddd"
+TEXT_CLR = "#1a1a2e"
+ACCENT   = "#4a5aa8"
 
 # ── Stress Episodes Short Labels ─────────────────────────────
 # Short display names for chart axis labels in dashboards
