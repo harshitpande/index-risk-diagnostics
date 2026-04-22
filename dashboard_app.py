@@ -647,7 +647,7 @@ def render_early_warning(ews, cs):
             st.markdown(
                 f'<div style="background:{"#2d0a0a" if active else "#0a2d0a"};'
                 f'border:2px solid {color};border-radius:8px;padding:12px;text-align:center">'
-                f'<h4 style="color:{color};margin:0">{label}</h4>'
+                f'<h4 style="color:#ffffff;margin:0">{label}</h4>'
                 f'<p style="color:{color};font-size:18px;font-weight:bold;margin:4px 0">'
                 f'{status}</p>'
                 f'<p style="color:#cccccc;font-size:10px;margin:0">{desc}</p>'
