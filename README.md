@@ -33,7 +33,7 @@ cover debt, currency, or credit markets.
 
 ## Live Dashboard
 
-> 🚀 **[Live Streamlit Dashboard](URL)** — updates daily after NSE market close
+> 🚀 **[Live Streamlit Dashboard](https://index-risk-diagnostics-njqohxitbrptatprusucnc.streamlit.app)** — updates daily after NSE market close
 
 **Reference Snapshot: April 9, 2026**
 All figures in the associated Medium article reflect this pipeline run.
