@@ -31,3 +31,12 @@ desktop.ini
 
 # Jupyter
 .ipynb_checkpoints/
+
+# Committed model artifacts — pipeline needs these in CI (small, static, ~300KB total)
+# These override the *.keras and data/ ignore rules above for four specific files.
+!data/
+data/*
+!data/gru_best_model_7j.keras
+!data/gru_regime_model.keras
+!data/regime_scaler_X.pkl
+!data/cost_ratio_config.json
