@@ -20,6 +20,7 @@ import json
 import os
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.metrics import classification_report, confusion_matrix
+from config import REGIME_LABELS
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import seaborn as sns
@@ -48,13 +49,6 @@ DROPOUT_RATE      = 0.2
 EPOCHS            = 50
 BATCH_SIZE        = 32
 VALIDATION_SPLIT  = 0.2
-
-REGIME_LABELS = {
-    0: 'Calm',
-    1: 'Pullback',
-    2: 'Stress',
-    3: 'Crisis'
-}
 
 REGIME_COLORS = {
     0: '#2ecc71',   # green
