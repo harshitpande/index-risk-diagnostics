@@ -61,6 +61,18 @@
 
 ---
 
+### 10. Forecast dates use generic business days, not the NSE trading calendar
+
+What: montecarlo.json forecast dates are built with pd.bdate_range (Mon–Fri), which includes Indian market holidays as if they were trading days. Matches existing arima.py behavior.
+Why deferred: cosmetically minor over a 21-day horizon; doesn't affect the risk story. Accepted for MVP.
+Trigger: revisit if forecast-date precision matters; would use an NSE holiday calendar instead of bdate_range.
+
+### 11. data/dashboard/*.json must be un-ignored for CI to commit them
+
+What: the export layer writes to data/dashboard/, but data/ is gitignored — so the JSON outputs won't be tracked by default. The GitHub Actions architecture depends on committing these JSON files back to the repo for the frontend to read.
+Why deferred: it's a step-4 (GitHub Actions) concern, not needed for local export testing.
+Trigger: address when building the GitHub Actions workflow — add un-ignore rules for data/dashboard/*.json (same pattern as the model-artifacts un-ignore).
+
 ## Notes on maintaining this file
 - Add items as they surface; don't fix them mid-unrelated-task (scope discipline).
 - Record the *why deferred* and *trigger*, not just the *what* — the context is what makes the item actionable later.
