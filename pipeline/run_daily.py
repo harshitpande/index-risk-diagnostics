@@ -92,7 +92,7 @@ def run_daily():
     from models.arima               import run_arima_pipeline
     from early_warning.signals      import compute_early_warning_signals
     from pipeline.evaluation        import run_evaluation
-    from visualization.dashboards   import run_dashboards
+    from pipeline.export_json       import run_export
 
     # Steps 1-5: Feature engineering
     run_step("Steps 1-5  | Feature Engineering",       run_features_pipeline)
@@ -228,8 +228,8 @@ def run_daily():
     # Step 13: Model evaluation
     run_step("Step 13    | Model Evaluation",     run_evaluation)
 
-    # Step 14: Visualization
-    run_step("Step 14    | Visualization Layer",  run_dashboards)
+    # Step 14: JSON export (dashboard data contract)
+    run_step("Step 14    | JSON Export",          run_export)
 
     # Archive
     archive_outputs()

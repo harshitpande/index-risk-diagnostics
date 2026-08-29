@@ -195,3 +195,9 @@ EWS_PKL           = os.path.join(DATA_DIR, "early_warning_signals.pkl")
 COST_RATIO_JSON   = os.path.join(DATA_DIR, "cost_ratio_config.json")
 EVAL_RESULTS_JSON = os.path.join(DATA_DIR, "evaluation_results.json")
 THRESHOLD_CAL_PKL = os.path.join(DATA_DIR, "threshold_calibration.pkl")
+
+# ── JSON Export (dashboard data contract) ──────────────────────
+DASHBOARD_DIR    = os.path.join(DATA_DIR, "dashboard")
+SNAPSHOT_JSON    = os.path.join(DASHBOARD_DIR, "snapshot.json")
+TIMESERIES_JSON  = os.path.join(DASHBOARD_DIR, "timeseries.json")
+MONTECARLO_JSON  = os.path.join(DASHBOARD_DIR, "montecarlo.json")
