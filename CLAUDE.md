@@ -14,13 +14,14 @@ most values here are empirically derived (not arbitrary) and documented there wi
 ## Current repo state — read before working here
 
 The repo is **mid-migration**. Commit `dda5791` removed the old Streamlit/matplotlib dashboard
-(`dashboard_app.py`, `visualization/dashboards.py`) in favor of a planned JSON-export → React/ECharts
-frontend, but the new frontend does not exist yet in this repo.
+(`dashboard_app.py`, `visualization/dashboards.py`) in favor of a JSON-export → React/ECharts
+frontend. The JSON-export layer now exists (`pipeline/export_json.py`), but the React frontend does
+not exist yet in this repo.
 
-- **`pipeline/run_daily.py` is currently broken**: Step 14 imports `from visualization.dashboards import
-  run_dashboards`, but that module was deleted. Running the full pipeline end-to-end will fail at Step 14
-  until the new visualization/export layer is built. Steps 1–13 (feature engineering through model
-  evaluation) are intact and runnable independently.
+- **The pipeline runs end-to-end.** Step 14 was rewired from the deleted `visualization.dashboards`
+  import to `pipeline/export_json.run_export`, so `python pipeline/run_daily.py` completes Steps 1–14
+  and writes `data/dashboard/{snapshot,timeseries,montecarlo}.json`. Steps 1–13 remain independently
+  runnable.
 - `REQUIREMENTS.md` is the locked spec for the *new* dashboard (single-page, ECharts, dark chart cards on
   white chrome, 4 charts + signal status bar) — read it before building any frontend/visualization work.
 - `docs/json_schema_notes.md` captures what the old dashboard's data-shaping code did, as a reference for
@@ -35,7 +36,7 @@ frontend, but the new frontend does not exist yet in this repo.
 There is no test suite, linter, or build step in this repo — it's a data pipeline of standalone scripts.
 
 ```bash
-# Full daily pipeline (Steps 1-14) — currently fails at Step 14, see above
+# Full daily pipeline (Steps 1-14) — runs end-to-end
 python pipeline/run_daily.py
 
 # Individual steps (each is independently runnable; each loads/writes its own data/*.pkl)
@@ -46,6 +47,7 @@ python models/monte_carlo.py         # Step 8: regime-conditional Monte Carlo
 python models/arima.py               # Step 9: ARIMA diagnostic forecast
 python early_warning/signals.py      # Step 12: early warning signals (also plots a standalone dashboard)
 python pipeline/evaluation.py        # Step 13: dual-tier evaluation + threshold calibration
+python pipeline/export_json.py        # Step 14: JSON export → data/dashboard/*.json (dashboard data contract)
 
 # Retrain the GRU regime classifier from scratch (the only script that calls .fit())
 python models/gru_regime.py
@@ -86,12 +88,20 @@ long as its upstream `.pkl` inputs already exist:
                                                       batch-recovers any date missing from regime_probs.pkl)
 12   early_warning/signals.py→ early_warning_signals.pkl (3 signals computed from regime_probs.pkl)
 13   pipeline/evaluation.py  → evaluation_results.json, threshold_calibration.pkl (dual-tier metrics)
-14   visualization/dashboards.py → MISSING (see "Current repo state" above)
+14   pipeline/export_json.py  → data/dashboard/{snapshot,timeseries,montecarlo}.json (dashboard data contract)
 ```
 
 Steps 6, 7, 11 are inference-only in production: the `.keras` models are trained offline
 (`models/gru_regime.py`'s `if __name__ == '__main__'` block is the training entry point) and never
 retrained by the daily pipeline — `pipeline/run_daily.py` only calls `load_model()`.
+
+### JSON export layer (Step 14) feeds the not-yet-built React frontend
+
+`pipeline/export_json.py` reads `features.pkl`, `monte_carlo_output.pkl`, and
+`early_warning_signals.pkl` and writes `data/dashboard/{snapshot,timeseries,montecarlo}.json` — the
+data contract the planned React/ECharts frontend will consume. It performs no new computation: every
+field is a direct read or a unit/label conversion of an upstream output. `docs/json_contract.md` is
+the authoritative field spec.
 
 ### Trained model files are not in git
 
