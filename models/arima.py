@@ -41,8 +41,14 @@ def select_arima_order(log_close: pd.Series) -> tuple:
 
 def run_arima_pipeline() -> dict:
     df        = pd.read_pickle(FEATURES_PKL)
-    log_close = np.log(df["Close"])
     last_date = df.index[-1]
+
+    # features.pkl is indexed by actual NSE trading dates: an irregular
+    # DatetimeIndex with no frequency. Newer statsmodels rejects that on
+    # get_forecast(steps=...) ("No supported index is available"). Fit on a
+    # plain integer index instead — forecast dates are synthesised below via
+    # pd.bdate_range, so the fitted index is never read back.
+    log_close = np.log(df["Close"]).reset_index(drop=True)
 
     # Stationarity check
     adf_level = adfuller(log_close, autolag="AIC")
