@@ -105,12 +105,7 @@ the authoritative field spec.
 
 ### Trained model files are not in git
 
-`*.keras` files, `regime_scaler_X.pkl`, and `cost_ratio_config.json` are gitignored and must be downloaded
-from the Google Drive link in `README.md` into `data/`. By contrast, the `.pkl`/`.json` *data outputs*
-(`features.pkl`, `regime_probs.pkl`, `evaluation_results.json`, etc.) **are** committed to git despite
-`data/` being in `.gitignore` — they were force-added, and CI/scheduled runs update them daily (see the
-"Daily dashboard update" commits in git history). If you regenerate these files locally, expect `git
-status` to show changes even without code edits, since NIFTY market data updates daily.
+Only the four model artifacts (gru_best_model_7j.keras, gru_regime_model.keras, regime_scaler_X.pkl, cost_ratio_config.json) are committed to data/ (force-added past the data/ ignore rule). The intermediate pipeline outputs (features.pkl, garch_output.pkl, regime_probs.pkl, etc.) are not tracked — they are regenerated from scratch on every pipeline run. The dashboard JSON (data/dashboard/*.json) is tracked and is committed by CI each run, since the frontend consumes it and cannot regenerate it.
 
 ### Two-tier model relationship: GARCH+GRU-volatility feed the GRU-regime classifier
 

@@ -40,3 +40,8 @@ data/*
 !data/gru_regime_model.keras
 !data/regime_scaler_X.pkl
 !data/cost_ratio_config.json
+
+# Dashboard JSON — the data contract the frontend consumes; committed by CI each run
+# data/* (above) re-ignores the dashboard subdir, so un-ignore the dir then its JSON files.
+!data/dashboard/
+!data/dashboard/*.json
