@@ -17,9 +17,6 @@
 import pandas as pd
 import numpy as np
 import yfinance as yf
-import requests
-from curl_cffi.requests import Session as CurlCffiSession
-from curl_cffi.requests.exceptions import ImpersonateError
 import warnings
 import sys
 import os
@@ -106,42 +103,21 @@ def fetch_data() -> pd.DataFrame:
 
     print(f"[features] Fetching {TICKER} from {START_DATE} to {target_date.date()} ...")
 
-    # yfinance delegates its HTTP layer to curl_cffi, which impersonates a
-    # specific Chrome TLS fingerprint. yfinance's own default drifts forward
-    # over time (currently "chrome" -> curl_cffi's newest supported version,
-    # e.g. chrome150) to keep ahead of bot detection, but a pinned CI/server
-    # curl_cffi build can lag behind and lack that newest target entirely
-    # (observed on GitHub Actions Ubuntu: ImpersonateError for chrome150).
-    # Pin to an explicit, long-stable target instead of chasing the moving
-    # default, and fall back to a plain (non-impersonated) requests.Session
-    # if even that target is unsupported on this platform, so a curl_cffi/
-    # platform mismatch degrades gracefully rather than hard-failing the
-    # whole pipeline.
-    try:
-        session = CurlCffiSession(impersonate="chrome124")
-        raw = yf.download(
-            TICKER,
-            start=START_DATE,
-            end=str(end_date.date()),
-            auto_adjust=True,
-            progress=False,
-            session=session
-        )
-    except ImpersonateError as e:
-        print(
-            f"[features] WARNING: curl_cffi impersonation unavailable on this "
-            f"platform ({e}); falling back to a plain requests.Session "
-            f"(no browser impersonation)."
-        )
-        session = requests.Session()
-        raw = yf.download(
-            TICKER,
-            start=START_DATE,
-            end=str(end_date.date()),
-            auto_adjust=True,
-            progress=False,
-            session=session
-        )
+    # yfinance manages its own HTTP session (curl_cffi with Chrome-TLS
+    # impersonation when available, falling back to plain requests
+    # otherwise). CI sets YF_DISABLE_CURL_CFFI=1 (see .github/workflows/
+    # daily.yml) to force the plain-requests fallback, since curl_cffi's
+    # Linux wheel has lagged behind on newest-Chrome-target impersonation
+    # support (observed: ImpersonateError for chrome124 and chrome150 on
+    # GitHub Actions Ubuntu). Locally, without that env var set, yfinance
+    # uses curl_cffi impersonation as normal.
+    raw = yf.download(
+        TICKER,
+        start=START_DATE,
+        end=str(end_date.date()),
+        auto_adjust=True,
+        progress=False,
+    )
 
     if raw.empty:
         raise ValueError(

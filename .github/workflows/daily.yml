@@ -27,6 +27,8 @@ jobs:
           python -c "import pickle; s = pickle.load(open('data/regime_scaler_X.pkl', 'rb')); print('Scaler loaded OK')"
 
       - name: Run pipeline
+        env:
+          YF_DISABLE_CURL_CFFI: "1"
         run: python pipeline/run_daily.py
 
         
