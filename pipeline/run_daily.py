@@ -109,6 +109,15 @@ def run_daily():
     # Step 9: ARIMA
     run_step("Step 9     | ARIMA Diagnostic Forecast", run_arima_pipeline)
 
+        # ------------------------------------------------------------------
+    # Note on step numbering: These "Step N" labels follow the current
+    # execution/dependency order. METHODOLOGY.md uses a different
+    # conceptual section numbering (§1-14) that predates the system's
+    # infrastructure transformation, so code step-numbers and doc
+    # section-numbers intentionally differ (e.g. Monte Carlo = Step 8
+    # here, §10 in the doc). "Step 10" is absent here by design.
+    # ------------------------------------------------------------------
+
     # ------------------------------------------------------------------
     # Step 11: GRU regime classifier — batch inference
     #
