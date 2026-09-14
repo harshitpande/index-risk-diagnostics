@@ -1,0 +1,69 @@
+:root {
+  /* Page */
+  --color-page-bg: #ffffff;
+  --color-text-primary: #14181f;
+  --color-text-secondary: #5b6472;
+
+  /* Dark chart-card surface */
+  --color-card-bg: #0e1117;
+  --color-card-border: #1e2430;
+  --color-card-text-primary: #f3f5f8;
+  --color-card-text-muted: #7a8290;
+
+  /* Signal status bar surface (dark, so chip colours read clearly) */
+  --color-statusbar-bg: #0e1117;
+  --color-statusbar-border: #1e2430;
+
+  /* Signal chip colours — active */
+  --color-chip-stress-active-bg: #e8b923; /* yellow */
+  --color-chip-crisis-active-bg: #e08a2e; /* orange */
+  --color-chip-escalation-active-bg: #d94f3d; /* red */
+  --color-chip-active-text: #14181f;
+
+  /* Signal chip colours — inactive / muted */
+  --color-chip-inactive-bg: #232833;
+  --color-chip-inactive-text: #6b7280;
+  --color-chip-inactive-border: #2e3441;
+
+  /* Regime colours — used to colour Chart 1's price line by segment (REQUIREMENTS.md §3).
+     Kept distinct from --color-chip-* above, which encodes a different signal-chip scale. */
+  --color-regime-calm: #2fbf8f; /* teal/green — expansion, low risk */
+  --color-regime-pullback: #f5a623; /* amber — normal-risk correction */
+  --color-regime-stress: #e8562e; /* red-orange — elevated volatility */
+  --color-regime-crisis: #8b1e2f; /* deep red/maroon — systemic stress */
+
+  /* Range selector (sits on the white page) */
+  --color-range-track-bg: #f0f1f3;
+  --color-range-track-border: #dadfe5;
+  --color-range-item-text: #5b6472;
+  --color-range-item-selected-bg: #14181f;
+  --color-range-item-selected-text: #ffffff;
+
+  /* Radius / shadow */
+  --radius-card: 12px;
+  --radius-chip: 999px;
+  --radius-control: 10px;
+  --shadow-card: 0 4px 16px rgba(14, 17, 23, 0.1), 0 1px 2px rgba(14, 17, 23, 0.06);
+
+  /* Type */
+  --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  --font-size-h1: 1.5rem;
+  --font-size-h2: 1.0625rem;
+  --font-size-body: 0.9375rem;
+  --font-size-chip: 0.8125rem;
+  --line-height-base: 1.5;
+
+  /* Spacing scale (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* Layout */
+  --content-max-width: 960px;
+  --breakpoint-mobile: 600px;
+}

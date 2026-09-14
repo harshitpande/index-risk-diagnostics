@@ -1,0 +1,7 @@
+.app-header h1 {
+  margin: 0;
+  font-size: var(--font-size-h1);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: -0.01em;
+}

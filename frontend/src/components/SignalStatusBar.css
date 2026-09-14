@@ -1,0 +1,41 @@
+.signal-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  background: var(--color-statusbar-bg);
+  border: 1px solid var(--color-statusbar-border);
+  border-radius: var(--radius-control);
+}
+
+.signal-chip {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-chip);
+  font-size: var(--font-size-chip);
+  font-weight: 600;
+  line-height: 1.4;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.signal-chip.is-muted {
+  background: var(--color-chip-inactive-bg);
+  color: var(--color-chip-inactive-text);
+  border-color: var(--color-chip-inactive-border);
+}
+
+.signal-chip.is-active {
+  color: var(--color-chip-active-text);
+}
+
+.signal-chip--stress.is-active {
+  background: var(--color-chip-stress-active-bg);
+}
+
+.signal-chip--crisis.is-active {
+  background: var(--color-chip-crisis-active-bg);
+}
+
+.signal-chip--escalation.is-active {
+  background: var(--color-chip-escalation-active-bg);
+}
