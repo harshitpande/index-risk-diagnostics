@@ -1077,97 +1077,321 @@ the pattern. This is a scope limitation, not a model error.
 
 ## 13. Dashboard and Visualization Layer
 
-### 13.1 Technology
+### 13.1 Architecture
 
-The visualization layer is implemented in Streamlit (`dashboard_app.py`).
-The dashboard is structured across six tabs.
+The visualization layer is a two-tier system separating computation
+from presentation. The Python pipeline writes a fixed JSON data
+contract; a React single-page application reads it. The pipeline is
+the single source of truth for every decision — regime labels, signal
+booleans, Monte Carlo percentiles — and the frontend performs no risk
+logic of its own. This separation replaces the monolithic Streamlit
+dashboard of the prior architecture (retired in commit `dda5791`),
+and ensures that a change to the palette or chart layout never
+requires a pipeline run, while a change to the risk methodology never
+requires a frontend deploy.
 
-### 13.2 Dashboard Tabs
+### 13.2 Data Contract
 
-| Tab | Content |
+Three JSON files under `data/dashboard/` form the interface between
+pipeline and frontend. The contract is authoritatively specified in
+`docs/json_contract.md`; a summary follows.
+
+| File | Job | Shape |
+|---|---|---|
+| `snapshot.json` | Today's state — feeds the signal status bar and regime headline instantly. Tiny, changes daily. | Single object |
+| `timeseries.json` | Full daily history from 2007-09-17 to latest. Feeds Charts 1–3. | Array of daily rows |
+| `montecarlo.json` | Recent historical context plus a 21-day forward percentile fan. Feeds Chart 4. | Object with metadata + two arrays |
+
+Global conventions apply across all three files: dates are ISO 8601
+strings (`YYYY-MM-DD`); numeric quantities are plain JSON numbers with
+volatility and drawdown expressed as **decimals** (`0.123` denotes
+12.3%), never percentages; regime labels use the canonical string set
+`"Calm"`, `"Pullback"`, `"Stress"`, `"Crisis"`; missing values are
+`null`, never zero. The frontend formats the `%` symbol at render
+time. This one-rule-everywhere convention prevents the mixed
+decimal/percentage bug documented in `docs/json_contract.md`, where
+plotting a percentage series against a decimal series would place
+one line at approximately 100× the scale of the other.
+
+### 13.3 Frontend Stack
+
+- **Framework:** React 19 with Vite as the dev server and static-build
+  toolchain
+- **Charting library:** Apache ECharts via `echarts-for-react`. Locked
+  in REQUIREMENTS.md §6 for consistent tooltip, zoom, and theming
+  behaviour across every chart
+- **Hosting (planned):** Vercel. The intended deploy mechanism is
+  Vercel's Git integration observing each pipeline commit-back to
+  `data/dashboard/*.json` and redeploying the site, so the live
+  dashboard reflects the day's diagnostics without any manual step.
+  Not yet configured — this is the upcoming productionization step
+- **State:** stateless client — no user accounts, no server calls, no
+  persistence beyond the JSON files themselves
+
+### 13.4 Layout
+
+A single-page vertical stack:
+
+```
+┌──────────────────────────────────────────────────────┐
+│  SIGNAL STATUS BAR   [Stress] [Crisis] [Escalation]  │
+├──────────────────────────────────────────────────────┤
+│  Chart 1 — Price History with Regime-Coloured Line   │
+├──────────────────────────────────────────────────────┤
+│  Chart 2 — Realized vs GARCH Volatility              │
+├──────────────────────────────────────────────────────┤
+│  Chart 3 — Drawdown from Peak                        │
+├──────────────────────────────────────────────────────┤
+│  Chart 4 — 1-Month Monte Carlo Fan Chart             │
+└──────────────────────────────────────────────────────┘
+```
+
+The page chrome is white (`#FFFFFF`) with dark text; each chart sits
+in its own dark navy panel (near-black, `#0E1117` or similar) with
+rounded corners. The white-page / dark-card split keeps the surface
+clean and professional while preserving the dark backgrounds the
+regime and signal palettes were designed against.
+
+A shared range selector (**1M / 6M / 1Y / 5Y / All since 2020**,
+default 1Y) reframes the x-axis of Charts 1–3 together, keeping the
+three historical series date-aligned as one view. Chart 4 is
+deliberately excluded from the selector — a range control is not
+meaningful for a short forward projection.
+
+Mobile responsiveness is a first-class requirement, not an
+afterthought. The single-column stack degrades naturally to narrow
+screens, chart widths track the viewport, the signal chips wrap as
+needed, and — because touch has no hover — tooltips are tap-to-show
+on touch devices.
+
+### 13.5 Signal Status Bar
+
+Three status chips grouped in a single container at the top of the
+page, each corresponding to one of the three early warning signals
+defined in Section 9.2:
+
+| Chip | Active colour | Source field |
+|---|---|---|
+| Stress | Yellow | `snapshot.signals.stress` |
+| Crisis | Orange | `snapshot.signals.crisis` |
+| Escalation | Red | `snapshot.signals.escalation` |
+
+Inactive chips render in a muted version of the same colour so the
+bar's footprint is stable whether or not signals fire. The chips are
+status lights, not interactive controls — clicking does nothing. The
+"signal strength" meter that appeared in the prior dashboard has been
+removed entirely; active/inactive is the only state the bar
+communicates. All threshold evaluation happens in
+`early_warning/signals.py` before the boolean is written to
+`snapshot.json` — the frontend performs no threshold logic of its own.
+
+### 13.6 Diagnostic Charts
+
+**Chart 1 — Price History with Regime-Coloured Line.** A single price
+line whose colour changes segment by segment according to the daily
+regime label in `timeseries.json`. Background regime bands from the
+prior dashboard are removed — the colour lives in the line itself,
+not behind it. Hover tooltip shows date and index level, with tooltip
+accent colour matching the regime of the hovered point.
+
+**Chart 2 — Realized vs GARCH Volatility.** Two annualised volatility
+series on the same axes, distinct colours, with a legend. The hover
+tooltip shows both values at the hovered date so the viewer can read
+the gap between realized (Section 2.2) and GJR-GARCH (Section 6)
+volatility.
+
+**Chart 3 — Drawdown from Peak.** Filled-area rendering of the daily
+drawdown series (Section 2.3), with labelled reference lines at the
+−15% (moderate) and −30% (severe) thresholds. Y-axis oriented with
+zero at the top and negative values below.
+
+**Chart 4 — 1-Month Monte Carlo Fan Chart.** The historical context
+leg (approximately 21 trading days of recent actual closes)
+transitions at `generated_on` into a forward fan: an outer 90% band
+(5th–95th percentiles), an inner 50% band (25th–75th percentiles),
+and a dashed median line. The chart title carries the current
+volatility and regime context (e.g. "Vol=12.3% | Regime: Pullback"),
+making explicit that the fan is conditioned on the current risk state.
+Framing discipline is enforced in copy — the band is labelled a
+**"90% probability band conditional on current risk state"**, never a
+forecast or a confidence interval about a point forecast. This is
+Bogle's humility principle carried through to the UI layer
+(Section 10.6).
+
+The regime colour mapping is fixed across every component that renders
+a regime:
+
+| Regime | Colour on dark panel |
 |---|---|
-| Live Dashboard | Current NIFTY level, drawdown, GARCH volatility, realized volatility, predicted regime, early warning signal status |
-| Regime Analysis | Softmax probability bands over test period, predicted vs actual regime chart, regime distribution, transition accuracy metrics |
-| Early Warning | Three signal status cards, composite stress probability time series, probability trajectory table (last 15 trading days) |
-| Scenario Analysis | Monte Carlo fan chart (21-day horizon), percentile summary table, ARIMA diagnostic forecast (1-quarter), CI width table |
-| Model Evaluation | Tier 1 metrics, per-class metrics table, Tier 2 episode capture table, threshold calibration chart, methodology notes |
-| About | System description, pipeline architecture, data sources, known limitations, academic references |
+| Calm | Teal / green |
+| Pullback | Amber / muted orange |
+| Stress | Red-orange |
+| Crisis | Deep red / maroon |
 
-### 13.3 Dynamic Metric Display
+Exact hex values are a build-time decision, tuned against the dark
+panel for contrast. The *mapping* is fixed; the *values* are the
+designer's to choose.
 
-All metrics displayed on the dashboard are recomputed on each pipeline
-execution and sourced from current-day outputs in `data/`. No static
-reference values are hardcoded. The "Below signal threshold" message is
-displayed when all three signals are inactive. Signal activation messages
-are displayed dynamically based on the current value of $S_t$ against
-the defined thresholds.
+### 13.7 Explicit Out-of-Scope
 
-### 13.4 Chart Design Conventions
+The prior dashboard's six-tab structure — Regime Analysis, Softmax
+probability bands, Predicted-vs-Actual regime panel, ARIMA forecast
+chart, composite stress probability chart, model evaluation tab — is
+retired. Model evaluation content lives in this document (Section 12)
+rather than the viewer surface; ARIMA remains a diagnostic in the
+pipeline (Section 11) but is not rendered. Cross-filtering between
+charts is out of scope for v1. These omissions are deliberate and
+documented in REQUIREMENTS.md §7 to prevent silent re-addition.
 
-- **Monte Carlo fan chart:** x-axis formatted at monthly intervals.
-  Three shaded bands showing 5th-95th, 25th-75th percentile ranges.
-  Median path annotated.
-- **ARIMA chart:** Historical price in blue, flat forecast line, expanding
-  confidence band. x-axis formatted at monthly intervals.
-- **Composite stress probability:** Horizontal reference lines at 0.40
-  (sustained threshold) and 0.60 (override threshold). Three fill colors:
-  green (< 0.40), orange (0.40–0.60), red (≥ 0.60).
-- **Regime probability bands:** Stacked area chart. Four-color scheme:
-  green (Calm), orange (Pullback), red (Stress), near-black (Crisis).
+### 13.8 Current Build Status
+
+The frontend is in progress. The application shell is in place —
+`Header`, `SignalStatusBar`, `RangeSelector`, and `ChartCard`
+components exist under `frontend/src/components/` with matching CSS,
+and the JSON export layer (Step 14 of the code pipeline) is producing
+the contract files. The four ECharts implementations are being added
+iteratively against the locked spec above.
 
 ---
 
 ## 14. Production Pipeline Architecture
 
-### 14.1 Execution Schedule
+### 14.1 Execution Environment
 
-The pipeline executes daily at **17:00 IST (5:00 PM)**, approximately
-90 minutes after NSE market close at 15:30 IST. Execution is managed
-by Windows Task Scheduler.
+The pipeline runs on GitHub Actions rather than a local machine. The
+workflow is defined in `.github/workflows/daily.yml` and executes on
+an `ubuntu-latest` runner with Python 3.12 and `pip` cached between
+runs. All dependencies are installed from `requirements.txt` at the
+start of each run.
 
-- **Task name:** `NIFTY_Risk_Diagnostics_Daily`
-- **Trigger:** Daily at 17:00 IST, weekdays only
-- **Script:** `run_daily.ps1` → `pipeline/run_daily.py`
+This is a deliberate migration away from the prior Windows Task
+Scheduler + `run_daily.ps1` architecture. A cloud-hosted, event-driven
+runner removes the dependency on a specific laptop being powered on
+at 17:00 IST, makes the pipeline reproducible from any developer
+machine via `workflow_dispatch`, and eliminates a class of
+"missed-because-my-machine-was-asleep" gaps.
 
-### 14.2 Daily Execution Sequence
+### 14.2 Execution Schedule
 
-Each daily execution performs the following steps in order:
+The workflow triggers on two events:
 
-1. Download full NIFTY 50 price series from Yahoo Finance (`^NSEI`)
-2. Apply time-aware close selection (before/after 15:30 IST logic)
-3. Compute all engineered features (log returns, realized volatility,
-   drawdown, rolling skewness, rolling kurtosis)
-4. Apply rule-based regime classification to all dates
-5. Fit GJR-GARCH model; compute conditional volatility series
-6. Run GRU volatility inference for next-day forecast
-7. Check for gaps in regime_probs.pkl; run batch inference for all
-   missing dates using correct historical features
-8. Append current-day regime probabilities
-9. Evaluate early warning signal conditions; record signal state
-10. Execute Monte Carlo simulation with regime-conditional parameters
-11. Compute ARIMA forecast with confidence intervals
-12. Run dual-tier model evaluation
-13. Regenerate all dashboard visualization outputs
-14. Archive dated copies of all chart files
+- **Scheduled:** cron `0 13 * * 1-5` — 13:00 UTC weekdays, which
+  corresponds to **18:30 IST**, approximately three hours after the
+  NSE market close at 15:30 IST. The buffer accommodates yfinance's
+  publication lag for the day's official closing print.
+- **Manual:** `workflow_dispatch` — allows any collaborator to
+  trigger a run from the GitHub UI (backfill after a runner outage,
+  smoke-test after a code change, etc.).
 
-### 14.3 Data Boundaries
+### 14.3 Pre-Flight Environment Verification
+
+Before invoking the pipeline, the workflow executes three inline
+checks:
+
+1. Import `tensorflow` and `keras`; print the versions in use
+2. Load `data/gru_regime_model.keras` and confirm the model
+   deserialises against the runner's Keras version
+3. Load `data/regime_scaler_X.pkl` and confirm the fitted scaler
+   deserialises
+
+This fail-fast pattern ensures that a Keras/TensorFlow version drift
+on the hosted runner is caught in the verify step (with a clear log
+line), rather than surfacing as a cryptic error halfway through the
+regime inference step. If any check fails, the workflow aborts before
+any data write.
+
+### 14.4 Daily Pipeline Execution
+
+The verified environment then runs `python pipeline/run_daily.py`,
+which executes the code pipeline's steps in the order shown below.
+The environment variable `YF_DISABLE_CURL_CFFI=1` is set for the
+pipeline invocation to keep `yfinance` on the standard `requests`
+transport, avoiding an intermittent TLS-handshake failure observed
+with `curl_cffi` on the hosted runner.
+
+| Code step | Module | Purpose | Conceptual reference |
+|---|---|---|---|
+| Steps 1–5 | `pipeline/features.py` | Time-aware fetch of `^NSEI`, log returns, 30-day realized volatility, drawdown, 63-day skewness and kurtosis, and rule-based regime labels | §1, §2, §3, §4, §5 |
+| Step 6 | `models/garch.py` | Fit GJR-GARCH(1,1); write conditional volatility series | §6 |
+| Step 7 | `models/gru_volatility.py` | Load `gru_best_model_7j.keras`; produce next-day volatility forecast (inference only) | §7 |
+| Step 8 | `models/monte_carlo.py` | 10,000 paths over 21-day horizon, conditioned on current GARCH volatility and predicted-regime drift | §10 |
+| Step 9 | `models/arima.py` | ARIMA(0,1,1) diagnostic forecast with expanding confidence intervals | §11 |
+| Step 11 | `models/gru_regime.py` | Load `gru_regime_model.keras`; diff dates in `features.pkl` against `regime_probs.pkl` and batch-fill any missing days using correct historical lookback windows | §8 |
+| Step 12 | `early_warning/signals.py` | Combined stress probability $S_t$; three signal booleans against calibrated thresholds | §9 |
+| Step 13 | `pipeline/evaluation.py` | Dual-tier evaluation metrics; threshold calibration | §12 |
+| Step 14 | `pipeline/export_json.py` | Read completed `.pkl` outputs; write `data/dashboard/{snapshot,timeseries,montecarlo}.json` in the contract format of Section 13.2. No new computation | §13 |
+
+**Note on numbering.** This document's section numbers are conceptual
+— they reflect the original system design and the natural order for a
+reader learning the methodology. The `run_daily.py` step numbers
+follow current execution and data-dependency order in the code and
+diverge from the conceptual scheme after Step 7 (Monte Carlo is §10
+in the document but Step 8 in code; the GRU regime classifier is §8
+in the document but Step 11 in code; Step 10 is intentionally absent
+from the code as an artefact of pipeline reordering). The two
+numbering schemes are kept as they are rather than forced into
+alignment — each is optimised for its purpose. Cross-references above
+are the bridge.
+
+### 14.5 Commit-Back and Deploy
+
+After the pipeline exits successfully, the workflow's final step
+stages `data/dashboard/*.json`, and — only if `git diff --staged` is
+non-empty — commits under the `github-actions[bot]` identity with a
+dated message (`Daily dashboard update: YYYY-MM-DD`) and pushes to
+the repository. A run that produces byte-identical JSON to the
+previous run skips the commit rather than producing an empty
+changeset.
+
+The push is the intended trigger for the frontend deploy. Once the
+Vercel hosting is configured (Section 13.3), its Git integration will
+observe each commit to the repository and redeploy the site with the
+updated JSON bundled in, giving a fully hands-off daily refresh from
+data fetch to live dashboard.
+
+### 14.6 Data Boundaries
 
 | Directory / File | Content | Git Status |
 |---|---|---|
-| `data/` | All `.pkl` output files, `.json` config | Pushed to repository |
-| `outputs/` | Chart exports (.png) | `.gitignore` — not pushed |
-| `logs/` | Execution logs | `.gitignore` — not pushed |
-| `*.keras` | Trained model weights | `.gitignore` — not pushed |
-| `venv/` | Python virtual environment | `.gitignore` — not pushed |
+| `data/dashboard/*.json` | Snapshot, timeseries, and Monte Carlo files consumed by the frontend | **Committed each run** by the GitHub Actions workflow |
+| `data/gru_best_model_7j.keras`, `data/gru_regime_model.keras`, `data/regime_scaler_X.pkl`, `data/cost_ratio_config.json` | Trained model artefacts and calibration config | Committed to the repository (force-added past the `data/` ignore rule) |
+| `data/*.pkl` (intermediate: `features.pkl`, `garch_output.pkl`, `regime_probs.pkl`, `monte_carlo_output.pkl`, `arima_output.pkl`, `early_warning_signals.pkl`) | Pipeline scratch outputs | `.gitignore` — regenerated from scratch each run |
+| `outputs/` | Legacy chart exports | `.gitignore` — no longer produced |
+| `logs/` | Execution logs | `.gitignore` |
+| `venv/` | Local Python virtual environment | `.gitignore` |
 
-Trained model weights are hosted externally:
-`https://drive.google.com/drive/folders/1XcTdikMvv1vyrfTJzGoRVNDKF1CJWjas`
+The four model artefacts (`gru_best_model_7j.keras`,
+`gru_regime_model.keras`, `regime_scaler_X.pkl`,
+`cost_ratio_config.json`) are committed directly to the repository.
+This is a deliberate change from the prior architecture, which hosted
+the weights externally: keeping them in the repo makes the pipeline
+self-contained for CI — `actions/checkout@v4` supplies everything the
+runner needs, with no separate download step and no external
+credentials required.
 
-Files required for production inference (download to `data/`):
-- `gru_best_model_7j.keras` — GRU volatility forecaster
-- `gru_regime_model.keras` — GRU regime classifier
-- `regime_scaler_X.pkl` — StandardScaler fitted on training data
-- `cost_ratio_config.json` — empirical cost ratio and class weights
+### 14.7 Self-Healing and Reproducibility
+
+Two properties of the pipeline compound to give the system robustness
+without additional operational tooling:
+
+- **Full-series fetch on every run.** The pipeline re-downloads the
+  complete `^NSEI` series from `START_DATE` (2007-09-17) rather than
+  incrementally appending. A missed run — GitHub Actions outage,
+  Indian public holiday, weekend — is invisible to the next run,
+  which observes and processes the same authoritative price history
+  regardless.
+- **Gap-aware regime backfill.** The GRU regime classifier step
+  (Step 11 in code, §8 conceptually) diffs the dates in
+  `features.pkl` against `regime_probs.pkl` and batch-runs GRU
+  inference for any missing days using their correct historical
+  lookback windows. No date is ever left with an estimated,
+  carry-forward, or interpolated regime probability.
+
+Combined with the fixed training cutoff (`TRAIN_CUTOFF = 2024-01-01`,
+Section 1.4) and the deterministic random seed used in model training
+(Section 8.5), the pipeline is reproducible: an identical commit
+history run against identical Yahoo Finance data produces identical
+JSON output.
 
 
 
