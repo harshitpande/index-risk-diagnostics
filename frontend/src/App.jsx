@@ -3,6 +3,7 @@ import SignalStatusBar from "./components/SignalStatusBar";
 import RangeSelector from "./components/RangeSelector";
 import ChartCard from "./components/ChartCard";
 import PriceRegimeChart from "./components/PriceRegimeChart";
+import VolatilityChart from "./components/VolatilityChart";
 
 export default function App() {
   return (
@@ -17,7 +18,9 @@ export default function App() {
       <ChartCard title="Price History with Regime-Coloured Line">
         <PriceRegimeChart />
       </ChartCard>
-      <ChartCard title="Realized vs GARCH Volatility" />
+      <ChartCard title="Realized vs GARCH Volatility">
+        <VolatilityChart />
+      </ChartCard>
       <ChartCard title="Drawdown from Peak" />
       <ChartCard title="1-Month Monte Carlo Fan Chart" />
     </div>

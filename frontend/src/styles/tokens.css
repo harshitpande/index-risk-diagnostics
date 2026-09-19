@@ -32,6 +32,12 @@
   --color-regime-stress: #e8562e; /* red-orange — elevated volatility */
   --color-regime-crisis: #8b1e2f; /* deep red/maroon — systemic stress */
 
+  /* Volatility-chart series colours — Chart 2 (Realized vs GARCH), two-series line chart.
+     Distinct from --color-regime-* above (no teal-green/amber/red-orange/maroon collision).
+     Placeholder values — tune on screen. */
+  --color-series-realized-vol: #3987e5; /* blue — rolling realized volatility */
+  --color-series-garch-vol: #d55181; /* rose — GJR-GARCH conditional volatility */
+
   /* Range selector (sits on the white page) */
   --color-range-track-bg: #f0f1f3;
   --color-range-track-border: #dadfe5;
