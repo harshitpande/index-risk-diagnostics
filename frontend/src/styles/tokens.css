@@ -38,6 +38,17 @@
   --color-series-realized-vol: #3987e5; /* blue — rolling realized volatility */
   --color-series-garch-vol: #d55181; /* rose — GJR-GARCH conditional volatility */
 
+  /* Drawdown-chart colours — Chart 3 (Drawdown from Peak), single-series filled area chart.
+     Distinct hue (violet) from --color-series-realized-vol/--color-series-garch-vol above and
+     from --color-regime-* (no blue/rose/teal/amber/red-orange/maroon collision).
+     Threshold colours intentionally echo the severity vocabulary of --color-chip-stress-active-bg
+     (moderate/amber) and --color-chip-crisis-active-bg (severe/orange) without reusing those exact
+     tokens — these are static Chart 3 reference lines, not live signal state, and must stay visually
+     distinguishable from an actually-active Stress/Crisis chip. Placeholder values — tune on screen. */
+  --color-series-drawdown: #9568e0; /* violet — drawdown-from-peak line/area */
+  --color-drawdown-threshold-moderate: #e8b923; /* amber — -15% moderate drawdown reference line */
+  --color-drawdown-threshold-severe: #e0642e; /* orange-red — -30% severe drawdown reference line */
+
   /* Range selector (sits on the white page) */
   --color-range-track-bg: #f0f1f3;
   --color-range-track-border: #dadfe5;

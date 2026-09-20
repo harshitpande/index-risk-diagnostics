@@ -4,6 +4,7 @@ import RangeSelector from "./components/RangeSelector";
 import ChartCard from "./components/ChartCard";
 import PriceRegimeChart from "./components/PriceRegimeChart";
 import VolatilityChart from "./components/VolatilityChart";
+import DrawdownChart from "./components/DrawdownChart";
 
 export default function App() {
   return (
@@ -21,7 +22,9 @@ export default function App() {
       <ChartCard title="Realized vs GARCH Volatility">
         <VolatilityChart />
       </ChartCard>
-      <ChartCard title="Drawdown from Peak" />
+      <ChartCard title="Drawdown from Peak">
+        <DrawdownChart />
+      </ChartCard>
       <ChartCard title="1-Month Monte Carlo Fan Chart" />
     </div>
   );
