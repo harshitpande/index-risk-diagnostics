@@ -49,6 +49,13 @@
   --color-drawdown-threshold-moderate: #e8b923; /* amber — -15% moderate drawdown reference line */
   --color-drawdown-threshold-severe: #e0642e; /* orange-red — -30% severe drawdown reference line */
 
+  /* Monte Carlo fan chart colours — Chart 4 (1-Month Monte Carlo Fan Chart). Historical leg is a
+     muted neutral (it's context, not a risk signal); band/median are a distinct blue-teal pair,
+     unused by any other chart's palette above. */
+  --color-series-mc-historical: #aab2c0; /* muted grey-blue — recent-history context line */
+  --color-series-mc-band: #4a7ddb; /* blue — 90% probability band fill (applied at reduced opacity) */
+  --color-series-mc-median: #4fd1c5; /* teal — dashed median forecast line */
+
   /* Range selector (sits on the white page) */
   --color-range-track-bg: #f0f1f3;
   --color-range-track-border: #dadfe5;

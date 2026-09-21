@@ -5,6 +5,7 @@ import ChartCard from "./components/ChartCard";
 import PriceRegimeChart from "./components/PriceRegimeChart";
 import VolatilityChart from "./components/VolatilityChart";
 import DrawdownChart from "./components/DrawdownChart";
+import MonteCarloChart from "./components/MonteCarloChart";
 
 export default function App() {
   return (
@@ -25,7 +26,9 @@ export default function App() {
       <ChartCard title="Drawdown from Peak">
         <DrawdownChart />
       </ChartCard>
-      <ChartCard title="1-Month Monte Carlo Fan Chart" />
+      <ChartCard title="1-Month Monte Carlo Fan Chart">
+        <MonteCarloChart />
+      </ChartCard>
     </div>
   );
 }

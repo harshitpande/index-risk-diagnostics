@@ -17,6 +17,10 @@ dist-ssr
 # this manual step later.
 public/timeseries.json
 
+# Dev-only manual copy of data/dashboard/montecarlo.json (see MonteCarloChart.jsx comment) —
+# same treatment as public/timeseries.json above.
+public/montecarlo.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
