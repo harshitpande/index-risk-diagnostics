@@ -1,7 +1,7 @@
 {
-  "date": "2026-09-21",
+  "date": "2026-09-22",
   "current_regime": "Pullback",
-  "days_in_regime": 102,
+  "days_in_regime": 103,
   "signals": {
     "stress": false,
     "crisis": false,
