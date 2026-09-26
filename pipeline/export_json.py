@@ -23,11 +23,23 @@ from config import (
     MONTE_CARLO_PKL,
     EWS_PKL,
     REGIME_LABELS,
+    THRESHOLDS,
     DASHBOARD_DIR,
     SNAPSHOT_JSON,
     TIMESERIES_JSON,
     MONTECARLO_JSON,
 )
+
+
+# Fixed characterization phrases for the snapshot `reasoning` sentence. These are
+# defined once here, not generated — see build_reasoning(). Stress is a catch-all
+# regime (deep drawdown OR high vol), so it carries one phrase per trigger.
+REGIME_CHARACTERIZATION = {
+    0: "an expansion / low-risk phase",
+    1: "a normal-risk correction, not systemic stress",
+    2: {"drawdown": "drawdown-driven stress", "volatility": "volatility-driven stress"},
+    3: "systemic stress",
+}
 
 
 # ─────────────────────────────────────────────────────────────
@@ -68,6 +80,72 @@ def clean_float(x):
     return float(x)
 
 
+def _pct(x, decimals=1) -> str:
+    """Decimal -> percentage string, e.g. -0.111 -> '-11.1%'."""
+    return f"{x * 100:.{decimals}f}%"
+
+
+def _dd_band(dd) -> str:
+    """Which drawdown band (per config.THRESHOLDS) the current drawdown falls into."""
+    dd_shallow = THRESHOLDS["DD_SHALLOW"]
+    dd_moderate = THRESHOLDS["DD_MODERATE"]
+    if dd >= dd_shallow:
+        return f"shallow (≥ {_pct(dd_shallow, 0)})"
+    elif dd >= dd_moderate:
+        return f"moderate ({_pct(dd_shallow, 0)} to {_pct(dd_moderate, 0)})"
+    else:
+        return f"deep (< {_pct(dd_moderate, 0)})"
+
+
+def _vol_band(vol) -> str:
+    """Which volatility band (per config.THRESHOLDS) the current realized_vol falls into."""
+    vol_low = THRESHOLDS["VOL_LOW"]
+    vol_high = THRESHOLDS["VOL_HIGH"]
+    if vol <= vol_low:
+        return f"low (≤ {_pct(vol_low, 0)})"
+    elif vol <= vol_high:
+        return f"elevated ({_pct(vol_low, 0)}–{_pct(vol_high, 0)})"
+    else:
+        return f"high (> {_pct(vol_high, 0)})"
+
+
+def _characterization(regime_int, dd) -> str:
+    """
+    Fixed characterization phrase for a regime. Stress (2) is reachable via deep
+    drawdown or high vol, so it picks its phrase by trigger: deep drawdown
+    (< DD_MODERATE, same boundary as the 'deep' band) is the defining driver;
+    otherwise assign_regimes guarantees vol > VOL_HIGH.
+    """
+    phrase = REGIME_CHARACTERIZATION[int(regime_int)]
+    if int(regime_int) == 2:
+        return phrase["drawdown" if dd < THRESHOLDS["DD_MODERATE"] else "volatility"]
+    return phrase
+
+
+def build_reasoning(regime_int, dd, vol):
+    """
+    Deterministic, rule-based sentence explaining today's regime classification.
+
+    Part (a) is generated from the real current drawdown/volatility values and the
+    real calibrated thresholds in config.THRESHOLDS. Part (b) is a fixed
+    characterization phrase (REGIME_CHARACTERIZATION) — not generated; for Stress,
+    one of two fixed phrases chosen by its trigger (see _characterization()). No
+    LLM/API involved anywhere in this function.
+    """
+    if pd.isna(dd) or pd.isna(vol):
+        return None
+
+    regime_str = regime_label(regime_int)
+    dd_band = _dd_band(dd)
+    vol_band = _vol_band(vol)
+    characterization = _characterization(regime_int, dd)
+
+    return (
+        f"Classified {regime_str}: drawdown of {_pct(dd)} is in the {dd_band} band, "
+        f"with volatility of {_pct(vol)} in the {vol_band} band — {characterization}."
+    )
+
+
 # ─────────────────────────────────────────────────────────────
 # BUILDERS
 # ─────────────────────────────────────────────────────────────
@@ -90,6 +168,9 @@ def build_snapshot(features_df: pd.DataFrame, ews_df: pd.DataFrame) -> dict:
         "date": iso(latest_date),
         "current_regime": regime_label(current_regime),
         "days_in_regime": days_in_regime,
+        "realized_vol": clean_float(latest["realized_vol"]),
+        "drawdown": clean_float(latest["drawdown"]),
+        "reasoning": build_reasoning(current_regime, latest["drawdown"], latest["realized_vol"]),
         "signals": {
             "stress": bool(ews_latest["stress_signal"]),
             "crisis": bool(ews_latest["crisis_alert"]),

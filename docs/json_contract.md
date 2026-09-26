@@ -38,6 +38,9 @@ These are *why* the files are shaped as they are. Keep them in mind when extendi
   "date": "2026-08-15",
   "current_regime": "Pullback",
   "days_in_regime": 12,
+  "realized_vol": 0.094,
+  "drawdown": -0.111,
+  "reasoning": "Classified Pullback: drawdown of -11.1% is in the moderate (-5% to -15%) band, with volatility of 9.4% in the low (≤ 12%) band — a normal-risk correction, not systemic stress.",
   "signals": {
     "stress": true,
     "crisis": false,
@@ -52,6 +55,9 @@ These are *why* the files are shaped as they are. Keep them in mind when extendi
 | `date` | string (ISO date) | The date this snapshot describes (latest pipeline run). |
 | `current_regime` | string | One of the four canonical regime labels. Today's regime. |
 | `days_in_regime` | integer | Number of consecutive days the market has been in `current_regime`. |
+| `realized_vol` | number \| null | Current (latest row) realized volatility, annualised, decimal. Same quantity as `timeseries.json`'s `realized_vol`, just the latest value. |
+| `drawdown` | number \| null | Current (latest row) drawdown from running peak, decimal. Same quantity as `timeseries.json`'s `drawdown`, just the latest value. |
+| `reasoning` | string \| null | A deterministic, rule-based sentence explaining today's regime classification, grounded in `config.THRESHOLDS` and the current `drawdown`/`realized_vol` values. **Pipeline-computed, not an LLM call** — see Notes. |
 | `signals.stress` | boolean | Whether the Stress signal is currently active. **Computed by the pipeline** (`early_warning/signals.py`), not derived on the frontend. |
 | `signals.crisis` | boolean | Whether the Crisis alert is currently active. Pipeline-computed. |
 | `signals.escalation` | boolean | Whether the Escalation signal is currently active. Pipeline-computed. |
@@ -59,7 +65,8 @@ These are *why* the files are shaped as they are. Keep them in mind when extendi
 **Notes:**
 - The three signal booleans map directly to the three chips in REQUIREMENTS.md §4 (Stress=yellow, Crisis=orange, Escalation=red). The frontend lights a chip when its boolean is `true`. No threshold logic on the frontend.
 - `signal_strength` is intentionally excluded (REQUIREMENTS.md §4 — active/inactive only).
-- Room to grow: current index level, current vols, etc. can be added here later if the top strip needs them. Additive changes (new fields) don't break the frontend; renames/removals do — so add, don't rename.
+- `reasoning` has two parts: (a) which drawdown/volatility band the current values fall into, named using the real calibrated boundaries in `config.THRESHOLDS` (never invented numbers); (b) a fixed characterization phrase (e.g. Crisis → "systemic stress") defined once in `pipeline/export_json.py::REGIME_CHARACTERIZATION`, not generated. Stress is a catch-all regime, so it selects between two fixed phrases by trigger: drawdown below `DD_MODERATE` → "drawdown-driven stress", otherwise (volatility above `VOL_HIGH`) → "volatility-driven stress". The whole sentence is deterministic rule-based logic — no LLM/API involved. `null` if the latest row's `drawdown`/`realized_vol` is unavailable.
+- Room to grow: current index level, etc. can be added here later if the top strip needs it. Additive changes (new fields) don't break the frontend; renames/removals do — so add, don't rename.
 
 ---
 
@@ -169,7 +176,7 @@ These are *why* the files are shaped as they are. Keep them in mind when extendi
 ## Locked decisions
 
 - **File location:** the three files are written to `data/dashboard/` (`data/dashboard/snapshot.json`, `data/dashboard/timeseries.json`, `data/dashboard/montecarlo.json`). Kept separate from the pipeline's internal `.pkl` outputs.
-- **Snapshot contents:** `date`, `current_regime`, `days_in_regime`, `signals{stress,crisis,escalation}`. Enrichment (index level, vols) deferred — additive only if the top strip needs it.
+- **Snapshot contents:** `date`, `current_regime`, `days_in_regime`, `realized_vol`, `drawdown`, `reasoning`, `signals{stress,crisis,escalation}`. Further enrichment (e.g. index level) deferred — additive only if the top strip needs it.
 - **Monte Carlo historical window:** ~21 trading days of actual price context before the fan begins.
 - **Units:** volatility and drawdown ship as **decimals**; the frontend formats to `%` for display (formatting only — no computation on the frontend).
 
