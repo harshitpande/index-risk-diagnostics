@@ -148,7 +148,7 @@ These are *why* the files are shaped as they are. Keep them in mind when extendi
 | Field | Type | Meaning |
 |-------|------|---------|
 | `generated_on` | string (ISO date) | The "today" point where history meets forecast. |
-| `current_vol` | number | Current volatility (decimal), for the chart title. |
+| `current_vol` | number | Current GJR-GARCH conditional volatility (annualised, decimal) — the σ driving the simulation; not realized vol. For the chart title. |
 | `current_regime` | string | Current regime label, for the chart title. |
 | `horizon_days` | integer | Forward horizon (≈21 trading days = 1 month). |
 | `historical` | array | Recent actual prices leading up to `generated_on` (context leg of the fan). |

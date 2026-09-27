@@ -32,6 +32,15 @@
   --color-regime-stress: #e8562e; /* red-orange — elevated volatility */
   --color-regime-crisis: #8b1e2f; /* deep red/maroon — systemic stress */
 
+  /* Regime text colours — for the regime name set as text on the dark card surface (verdict
+     banner). Identical to the line colours above except Crisis: #8b1e2f maroon is too dark to read
+     as text on --color-card-bg, so its text variant is a lighter maroon (>= 4.5:1 on #0e1117).
+     Chart 1's line colours are unchanged. */
+  --color-regime-calm-text: #2fbf8f;
+  --color-regime-pullback-text: #f5a623;
+  --color-regime-stress-text: #e8562e;
+  --color-regime-crisis-text: #d0566b;
+
   /* Volatility-chart series colours — Chart 2 (Realized vs GARCH), two-series line chart.
      Distinct from --color-regime-* above (no teal-green/amber/red-orange/maroon collision).
      Placeholder values — tune on screen. */
@@ -76,6 +85,8 @@
   --font-size-h2: 1.0625rem;
   --font-size-body: 0.9375rem;
   --font-size-chip: 0.8125rem;
+  --font-size-verdict: 2.25rem; /* regime name in the verdict banner */
+  --font-size-kpi: 2.5rem; /* current value in a KPI panel */
   --line-height-base: 1.5;
 
   /* Spacing scale (4px base) */
@@ -88,6 +99,6 @@
   --space-7: 48px;
 
   /* Layout */
-  --content-max-width: 960px;
+  --content-max-width: 1200px;
   --breakpoint-mobile: 600px;
 }

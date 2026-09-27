@@ -228,7 +228,8 @@ export default function MonteCarloChart() {
   return (
     <div className="montecarlo-chart">
       <div className="montecarlo-context">
-        Vol={percentFormatter.format(data.current_vol)} | Regime: {data.current_regime}
+        GARCH conditional vol = {percentFormatter.format(data.current_vol)} | Regime:{" "}
+        {data.current_regime}
       </div>
       <div className="montecarlo-chart-canvas">
         <ReactECharts option={option} style={{ height: "100%", width: "100%" }} notMerge />

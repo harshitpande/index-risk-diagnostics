@@ -21,24 +21,32 @@ Audience: the builder's professional/portfolio audience (recruiters, interviewer
 A **single-page dashboard**, top to bottom:
 
 ```
-┌─────────────────────────────────────────────────────┐
-│  SIGNAL STATUS BAR   [Stress] [Crisis] [Escalation]  │  ← always visible, slim
-├─────────────────────────────────────────────────────┤
-│  CHART 1: Price History with Regime-Coloured Line    │
-├─────────────────────────────────────────────────────┤
-│  CHART 2: Realized vs GARCH Volatility               │
-├─────────────────────────────────────────────────────┤
-│  CHART 3: Drawdown from Peak                         │
-├─────────────────────────────────────────────────────┤
-│  CHART 4: 1-Month Monte Carlo Fan Chart              │
-└─────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│  VERDICT BANNER                                              │
+│  Current regime (large, regime-coloured)   [Stress][Crisis][Escalation]
+│  N trading days in this regime, as of <date>                 │
+│  Reasoning sentence (plain-language "why")                   │
+├─────────────────────────────────────────────────────────────┤
+│                                   [1M 6M 1Y 5Y All]  range   │
+│  CHART 1: Price History with Regime-Coloured Line            │
+├──────────────────┬──────────────────────────────────────────┤
+│  KPI: realized   │  CHART 2: Realized vs GARCH Volatility    │
+│  vol (today)     │                                           │
+├──────────────────┼──────────────────────────────────────────┤
+│  KPI: drawdown   │  CHART 3: Drawdown from Peak              │
+│  (today)         │                                           │
+├──────────────────┴──────────────────────────────────────────┤
+│  CHART 4: 1-Month Monte Carlo Fan Chart                      │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-There is **no separate "Early Warning System" section heading**. The three signals live in the status bar at the top; they *are* the early warning, surfaced by prominence rather than by a section. The four charts below are the diagnostic layer. Conceptually one dashboard, not two sections.
+There is **no separate "Early Warning System" section heading**. The three signals live in the verdict banner at the top; they *are* the early warning, surfaced by prominence rather than by a section. The charts below are the diagnostic layer. Conceptually one dashboard, not two sections.
 
-Charts stack vertically, full width, one per row. (Rationale: these are time series sharing an x-axis; stacking keeps dates visually aligned and leaves room for the fan chart's detail. Revisit only if a 2-column layout is explicitly requested.)
+**Verdict banner** — the current-state headline: today's rule-based regime (colour-coded per §3), the reasoning sentence explaining the classification, days in the current regime, the as-of date, and the signal chips (§4). Every value is a direct read of `snapshot.json`.
 
-**Mobile responsive — required, first-class.** The dashboard must work well on mobile, not merely not-break. The single-column stack degrades naturally to narrow screens; charts resize to viewport width; the signal status bar wraps or stacks its three chips as needed; and because touch has no hover, **tooltips must be tap-to-show on touch devices** (tap a point to reveal its values). This is a primary requirement, weighted equally with the desktop experience — not an afterthought.
+**Chart arrangement.** Chart 1 sits full-width directly under the banner, as the regime history that led to the current state (the banner is its headline). Charts 2 and 3 are each paired with a **KPI panel** (~30% left, chart ~70% right) showing today's value of that series (realized volatility, drawdown) as a percentage. KPI panels are display-only: no thresholds, colour-coding, or interpretation beyond the snapshot values. Chart 4 sits full-width at the bottom. Charts 1–3 keep a shared time axis via the range selector (§6), so date alignment is preserved even though Charts 2–3 are narrower.
+
+**Mobile responsive — required, first-class.** The dashboard must work well on mobile, not merely not-break. Below ~720px everything stacks single-column, with each KPI panel directly above its chart; charts resize to viewport width; the banner's signal chips wrap below the regime name; and because touch has no hover, **tooltips must be tap-to-show on touch devices** (tap a point to reveal its values). This is a primary requirement, weighted equally with the desktop experience — not an afterthought.
 
 ---
 
@@ -61,9 +69,9 @@ Exact hex values are the designer's choice at build time — tuned against the d
 
 ---
 
-## 4. Signal status bar (top)
+## 4. Signal status chips (in the verdict banner)
 
-Three status indicators grouped in one container (single div, visually joined as a segmented control / chip group).
+Three status indicators grouped in one container (single div, visually joined as a segmented control / chip group). The group sits inside the verdict banner (§2), beside the current regime, rather than in a standalone bar.
 
 **Behaviour:** each is a **status light**, not an interactive control. It reflects today's pipeline output — lit/active when that signal is currently firing, muted/inactive otherwise. Clicking does nothing (no filtering, no navigation). *This is deliberate and must not be extended to interactive filtering without a spec change.*
 
@@ -108,7 +116,7 @@ Inactive state: muted/greyed version of the same chip, so the bar's shape is sta
 
 - **Data:** recent historical index (for context) + forward simulation percentiles over a ~21-trading-day horizon: 5th, 25th, 50th (median), 75th, 95th. (Bands: 90% = 5th–95th, 50% = 25th–75th.)
 - **Rendering:** historical line transitioning at "today" into a forward fan — a wider outer band (90%) and a narrower inner band (50%) around a dashed median line. Annotate the endpoint percentile values.
-- **Framing (critical):** this is a **risk-conditioned scenario distribution, not a forecast**. The interval must be labelled as a **90% probability band conditional on current risk state**, never as a prediction or a confidence interval about a point forecast. Chart title/caption carries the current volatility and regime context (e.g. "Vol=12.3% | Regime: Pullback").
+- **Framing (critical):** this is a **risk-conditioned scenario distribution, not a forecast**. The interval must be labelled as a **90% probability band conditional on current risk state**, never as a prediction or a confidence interval about a point forecast. Chart title/caption carries the current volatility and regime context (e.g. "GARCH conditional vol = 12.3% | Regime: Pullback"). The vol shown is the GJR-GARCH conditional volatility that drives the simulation, and must be labelled as such: it is a different measure from the realized volatility in the Chart 2 KPI panel, and a bare "Vol" label makes the two read as contradictory.
 - **Interaction — hover:** tooltip shows the date and the percentile values at that horizon step.
 - **Axes:** x = date (historical → forward); y = index level.
 
@@ -148,5 +156,6 @@ Every item that was open in the draft is now resolved:
 - **Regime / panel hex values:** designer's choice at build, verified on screen (§3).
 - **Historical window:** selectable range — 1M / 6M / 1Y / 5Y / All since 2020, shared across the three historical charts (§6).
 - **Mobile responsive:** required and first-class, with tap-to-show tooltips on touch (§2).
+- **Layout (revised):** verdict banner on top holding the signal chips; Chart 1 full-width; Charts 2–3 each paired with a current-value KPI panel; Chart 4 full-width (§2, §4). Replaces the original all-full-width stack under a slim status bar.
 
 No open items remain. The spec is build-ready.

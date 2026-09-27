@@ -1,0 +1,42 @@
+.kpi-panel {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-panel-label {
+  margin: 0;
+  font-size: var(--font-size-h2);
+  font-weight: 600;
+  color: var(--color-card-text-primary);
+}
+
+.kpi-panel-value {
+  margin: auto 0 0;
+  padding-top: var(--space-5);
+  font-size: var(--font-size-kpi);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-card-text-primary);
+}
+
+.kpi-panel-caption {
+  margin: var(--space-2) 0 0;
+  color: var(--color-card-text-muted);
+}
+
+@media (max-width: 600px) {
+  .kpi-panel {
+    padding: var(--space-4);
+  }
+
+  .kpi-panel-value {
+    padding-top: var(--space-3);
+  }
+}
