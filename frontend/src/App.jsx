@@ -8,6 +8,7 @@ import PriceRegimeChart from "./components/PriceRegimeChart";
 import VolatilityChart from "./components/VolatilityChart";
 import DrawdownChart from "./components/DrawdownChart";
 import MonteCarloChart from "./components/MonteCarloChart";
+import { DEFAULT_RANGE, createZoomGroup } from "./lib/timeAxis";
 
 const dateFormatter = new Intl.DateTimeFormat("en-IN", {
   year: "numeric",
@@ -23,6 +24,12 @@ const percentFormatter = new Intl.NumberFormat("en-IN", {
 export default function App() {
   const [snapshot, setSnapshot] = useState(null);
   const [snapshotError, setSnapshotError] = useState(null);
+  // Shared time window for Charts 1-3: the selected range, plus the group that keeps their
+  // manual zoom in sync. Chart 4 (Monte Carlo) takes neither.
+  // A fresh object per click, so re-clicking the active range still re-applies it (snapping back
+  // after a manual zoom) — a bare string state would make that click a no-op.
+  const [selection, setSelection] = useState({ range: DEFAULT_RANGE });
+  const [zoomGroup] = useState(createZoomGroup);
 
   useEffect(() => {
     let cancelled = false;
@@ -54,11 +61,11 @@ export default function App() {
       <VerdictBanner snapshot={snapshot} error={snapshotError} />
 
       <div className="range-row">
-        <RangeSelector />
+        <RangeSelector value={selection.range} onChange={(range) => setSelection({ range })} />
       </div>
 
       <ChartCard title="Price History with Regime-Coloured Line">
-        <PriceRegimeChart />
+        <PriceRegimeChart selection={selection} zoomGroup={zoomGroup} />
       </ChartCard>
 
       <div className="paired-row">
@@ -68,7 +75,7 @@ export default function App() {
           caption={asOf && `Annualised, ${asOf}`}
         />
         <ChartCard title="Realized vs GARCH Volatility">
-          <VolatilityChart />
+          <VolatilityChart selection={selection} zoomGroup={zoomGroup} />
         </ChartCard>
       </div>
 
@@ -79,7 +86,7 @@ export default function App() {
           caption={asOf && `Below running peak, ${asOf}`}
         />
         <ChartCard title="Drawdown from Peak">
-          <DrawdownChart />
+          <DrawdownChart selection={selection} zoomGroup={zoomGroup} />
         </ChartCard>
       </div>
 

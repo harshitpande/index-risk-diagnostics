@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import ReactECharts from "echarts-for-react";
+import { ZOOM_MIN_SPAN_MS } from "../lib/timeAxis";
 import "./MonteCarloChart.css";
 
 function cssVar(name) {
@@ -110,10 +111,11 @@ export default function MonteCarloChart() {
       },
       // Inside-type zoom only (scroll/pinch + drag) — no visible slider UI. Chart 4 stays
       // excluded from the shared 1M/6M/1Y/5Y/All RangeSelector (REQUIREMENTS.md §6) since a
-      // range control isn't meaningful for a short forward projection.
+      // range control isn't meaningful for a short forward projection. It does share the
+      // one-week zoom floor (minValueSpan) so daily points never vanish at maximum zoom.
       // TODO(mobile): verify inside-zoom doesn't fight page scroll on touch devices once the
       // mobile-responsive pass happens.
-      dataZoom: [{ type: "inside", xAxisIndex: 0 }],
+      dataZoom: [{ type: "inside", xAxisIndex: 0, minValueSpan: ZOOM_MIN_SPAN_MS }],
       tooltip: {
         trigger: "axis",
         backgroundColor: cardBg,

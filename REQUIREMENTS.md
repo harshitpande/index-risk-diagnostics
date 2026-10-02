@@ -133,7 +133,7 @@ Every chart must support, at minimum:
 - Zoom / pan on the time axis.
 - Legend toggle where a chart has multiple series.
 
-**Range selector (selectable window, Google-Finance style).** A shared row of buttons — **1M / 6M / 1Y / 5Y / All (since 2020)** — reframes the x-axis on click. It controls the three historical time-series charts together (Chart 1 Price, Chart 2 Volatility, Chart 3 Drawdown) so they stay date-aligned as one view. Default window: **1Y**. The Monte Carlo fan chart (Chart 4) is **excluded** from the selector — it keeps a fixed recent-history-plus-forward window, since a range control is not meaningful for a short forward projection. *(This shared-vs-per-chart choice is a deliberate recommendation; flag if per-chart selectors are preferred instead.)*
+**Range selector (selectable window, Google-Finance style).** A shared row of buttons — **1M / 6M / 1Y / 5Y / All (full history, since 2007)** — reframes the x-axis on click. It controls the three historical time-series charts together (Chart 1 Price, Chart 2 Volatility, Chart 3 Drawdown) so they stay date-aligned as one view. Default window: **1Y**. The Monte Carlo fan chart (Chart 4) is **excluded** from the selector — it keeps a fixed recent-history-plus-forward window, since a range control is not meaningful for a short forward projection. *(This shared-vs-per-chart choice is a deliberate recommendation; flag if per-chart selectors are preferred instead.)*
 
 Cross-filtering between charts (click one chart → others filter) is **out of scope for v1**. If added later it requires its own spec.
 
@@ -156,7 +156,7 @@ Listed so they are not silently re-added:
 Every item that was open in the draft is now resolved:
 - **Charting library:** Apache ECharts (§6).
 - **Regime / panel hex values:** designer's choice at build, verified on screen (§3).
-- **Historical window:** selectable range — 1M / 6M / 1Y / 5Y / All since 2020, shared across the three historical charts (§6).
+- **Historical window:** selectable range — 1M / 6M / 1Y / 5Y / All (full history, since 2007), shared across the three historical charts (§6).
 - **Mobile responsive:** required and first-class, with tap-to-show tooltips on touch (§2).
 - **Layout (revised):** verdict banner on top holding the signal chips; Chart 1 full-width; Charts 2–3 each paired with a current-value KPI panel; Chart 4 full-width (§2, §4). Replaces the original all-full-width stack under a slim status bar.
 

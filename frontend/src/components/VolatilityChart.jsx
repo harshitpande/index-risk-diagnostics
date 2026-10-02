@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import ReactECharts from "echarts-for-react";
+import { ZOOM_MIN_SPAN_MS, useSyncedTimeWindow } from "../lib/timeAxis";
 import "./VolatilityChart.css";
 
 function cssVar(name) {
@@ -17,9 +18,10 @@ const percentFormatter = new Intl.NumberFormat("en-IN", {
   maximumFractionDigits: 1,
 });
 
-export default function VolatilityChart() {
+export default function VolatilityChart({ selection, zoomGroup }) {
   const [rows, setRows] = useState(null);
   const [error, setError] = useState(null);
+  const { onChartReady, onEvents } = useSyncedTimeWindow({ selection, rows, zoomGroup });
 
   useEffect(() => {
     let cancelled = false;
@@ -85,12 +87,12 @@ export default function VolatilityChart() {
         textStyle: { color: textMuted, fontFamily, fontSize: 15 },
         inactiveColor: cardBorder,
       },
-      // Inside-type zoom only (scroll/pinch + drag) — no visible slider UI. The shared
-      // 1M/6M/1Y/5Y/All RangeSelector will drive Charts 1-3 together in a later pass; this is
-      // a separate, per-chart interaction.
+      // Inside-type zoom only (scroll/pinch + drag) — no visible slider UI. The window is shared
+      // with Charts 1 and 3: set by the RangeSelector and kept in sync on manual zoom/pan via
+      // useSyncedTimeWindow. minValueSpan floors zoom at one week so daily points never vanish.
       // TODO(mobile): verify inside-zoom doesn't fight page scroll on touch devices once the
       // mobile-responsive pass happens.
-      dataZoom: [{ type: "inside", xAxisIndex: 0 }],
+      dataZoom: [{ type: "inside", xAxisIndex: 0, minValueSpan: ZOOM_MIN_SPAN_MS }],
       tooltip: {
         trigger: "axis",
         backgroundColor: cardBg,
@@ -149,7 +151,13 @@ export default function VolatilityChart() {
   return (
     <div className="volatility-chart">
       <div className="volatility-chart-canvas">
-        <ReactECharts option={option} style={{ height: "100%", width: "100%" }} notMerge />
+        <ReactECharts
+          onChartReady={onChartReady}
+          option={option}
+          onEvents={onEvents}
+          style={{ height: "100%", width: "100%" }}
+          notMerge
+        />
       </div>
     </div>
   );
