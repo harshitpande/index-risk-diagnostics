@@ -1,18 +1,21 @@
 :root {
-  /* Page */
-  --color-page-bg: #ffffff;
-  --color-text-primary: #14181f;
-  --color-text-secondary: #5b6472;
+  color-scheme: dark;
 
-  /* Dark chart-card surface */
-  --color-card-bg: #0e1117;
-  --color-card-border: #1e2430;
+  /* Page — full-dark theme: the page is the lowest layer, cards sit one step lighter above it. */
+  --color-page-bg: #0a0d12;
+  --color-text-primary: #f3f5f8;
+  --color-text-secondary: #8b94a3;
+  --color-focus-ring: #8fb4ff;
+
+  /* Card surface (charts, KPI panels, verdict banner) — raised one step above --color-page-bg */
+  --color-card-bg: #131820;
+  --color-card-border: #252c38;
   --color-card-text-primary: #f3f5f8;
-  --color-card-text-muted: #7a8290;
+  --color-card-text-muted: #8b94a3; /* 5.8:1 on --color-card-bg */
 
-  /* Signal status bar surface (dark, so chip colours read clearly) */
-  --color-statusbar-bg: #0e1117;
-  --color-statusbar-border: #1e2430;
+  /* Signal status bar surface — same as the card it sits in */
+  --color-statusbar-bg: var(--color-card-bg);
+  --color-statusbar-border: var(--color-card-border);
 
   /* Signal chip colours — active */
   --color-chip-stress-active-bg: #e8b923; /* yellow */
@@ -32,14 +35,14 @@
   --color-regime-stress: #e8562e; /* red-orange — elevated volatility */
   --color-regime-crisis: #8b1e2f; /* deep red/maroon — systemic stress */
 
-  /* Regime text colours — for the regime name set as text on the dark card surface (verdict
+  /* Regime text colours — for the regime name and accent border on the card surface (verdict
      banner). Identical to the line colours above except Crisis: #8b1e2f maroon is too dark to read
-     as text on --color-card-bg, so its text variant is a lighter maroon (>= 4.5:1 on #0e1117).
+     on --color-card-bg, so its text variant is a lighter maroon (5.5:1 on #131820).
      Chart 1's line colours are unchanged. */
   --color-regime-calm-text: #2fbf8f;
   --color-regime-pullback-text: #f5a623;
   --color-regime-stress-text: #e8562e;
-  --color-regime-crisis-text: #d0566b;
+  --color-regime-crisis-text: #e0697d;
 
   /* Volatility-chart series colours — Chart 2 (Realized vs GARCH), two-series line chart.
      Distinct from --color-regime-* above (no teal-green/amber/red-orange/maroon collision).
@@ -65,18 +68,18 @@
   --color-series-mc-band: #4a7ddb; /* blue — 90% probability band fill (applied at reduced opacity) */
   --color-series-mc-median: #4fd1c5; /* teal — dashed median forecast line */
 
-  /* Range selector (sits on the white page) */
-  --color-range-track-bg: #f0f1f3;
-  --color-range-track-border: #dadfe5;
-  --color-range-item-text: #5b6472;
-  --color-range-item-selected-bg: #14181f;
-  --color-range-item-selected-text: #ffffff;
+  /* Range selector (sits on the dark page; track matches the card surface) */
+  --color-range-track-bg: var(--color-card-bg);
+  --color-range-track-border: var(--color-card-border);
+  --color-range-item-text: var(--color-card-text-muted);
+  --color-range-item-selected-bg: #2a3240;
+  --color-range-item-selected-text: var(--color-card-text-primary);
 
   /* Radius / shadow */
   --radius-card: 12px;
   --radius-chip: 999px;
   --radius-control: 10px;
-  --shadow-card: 0 4px 16px rgba(14, 17, 23, 0.1), 0 1px 2px rgba(14, 17, 23, 0.06);
+  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.45), 0 1px 2px rgba(0, 0, 0, 0.3);
 
   /* Type */
   --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,

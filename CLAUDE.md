@@ -22,8 +22,8 @@ not exist yet in this repo.
   import to `pipeline/export_json.run_export`, so `python pipeline/run_daily.py` completes Steps 1–14
   and writes `data/dashboard/{snapshot,timeseries,montecarlo}.json`. Steps 1–13 remain independently
   runnable.
-- `REQUIREMENTS.md` is the locked spec for the *new* dashboard (single-page, ECharts, dark chart cards on
-  white chrome, 4 charts + signal status bar) — read it before building any frontend/visualization work.
+- `REQUIREMENTS.md` is the locked spec for the *new* dashboard (single-page, ECharts, full-dark
+  theme, 4 charts + signal status bar) — read it before building any frontend/visualization work.
 - `docs/json_schema_notes.md` captures what the old dashboard's data-shaping code did, as a reference for
   designing the new JSON export contract. It documents a `get_current_state()`-style snapshot schema and
   notes that `signal_strength` is intentionally excluded from the new dashboard per REQUIREMENTS.md §4.

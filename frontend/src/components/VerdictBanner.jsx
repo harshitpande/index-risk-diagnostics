@@ -32,7 +32,8 @@ export default function VerdictBanner({ snapshot, error }) {
     <section
       className="verdict-banner"
       style={{
-        "--verdict-accent": `var(--color-regime-${regimeKey})`,
+        // Text variant for the accent too: the Crisis line colour is too dark to read on the card.
+        "--verdict-accent": `var(--color-regime-${regimeKey}-text)`,
         "--verdict-text": `var(--color-regime-${regimeKey}-text)`,
       }}
       aria-label="Current risk state"

@@ -52,20 +52,22 @@ There is **no separate "Early Warning System" section heading**. The three signa
 
 ## 3. Theme and palette
 
-**Page chrome:** white background (`#FFFFFF`), dark text. Clean, professional, non-terminal.
+**Full-dark theme.** The whole dashboard is one dark surface system with light text throughout. It stays clean, professional and non-terminal.
 
-**Chart surfaces:** each chart sits in its own **dark card** (near-black navy panel, e.g. `#0E1117` or similar) with rounded corners and subtle shadow. This white-page / dark-panel split is deliberate: it keeps the page clean while preserving the dark backgrounds the existing chart palettes were designed for, and gives the signal chips a dark surface so their colours read clearly.
+**Page chrome:** dark grey / near-black background (e.g. `#0A0D12`) with light text. That covers the header, the range selector and any secondary text.
+
+**Surfaces:** the verdict banner, KPI panels and each chart sit in their own **dark card**. A card is one step lighter than the page (e.g. `#131820`), with rounded corners, a subtle border and a shadow to separate it. Lighter means more elevated. Banner, KPI panels and charts share this one card surface so they read as a single dashboard. The dark surfaces keep the backgrounds the chart palettes were designed for, and they give the signal chips a dark ground so their colours read clearly.
 
 **Regime colour system** (used consistently everywhere a regime appears — the price line, tooltips, any regime reference):
 
-| Regime    | Meaning                  | Colour (on dark panel) |
-|-----------|--------------------------|------------------------|
-| Calm      | Expansion / low risk     | Teal / green           |
-| Pullback  | Normal-risk correction   | Amber / muted orange   |
-| Stress    | Elevated volatility      | Red-orange             |
-| Crisis    | Systemic stress          | Deep red / maroon      |
+| Regime    | Meaning                  | Colour (on dark surface) |
+|-----------|--------------------------|--------------------------|
+| Calm      | Expansion / low risk     | Teal / green             |
+| Pullback  | Normal-risk correction   | Amber / muted orange     |
+| Stress    | Elevated volatility      | Red-orange               |
+| Crisis    | Systemic stress          | Deep red / maroon        |
 
-Exact hex values are the designer's choice at build time — tuned against the dark panel for contrast and verified on screen. They are a build decision, not an open question. The *mapping* above is fixed and must be identical across all components.
+Exact hex values are the designer's choice at build time — tuned against the dark card surface for contrast and verified on screen. They are a build decision, not an open question. The *mapping* above is fixed and must be identical across all components.
 
 ---
 

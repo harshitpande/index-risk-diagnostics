@@ -1146,10 +1146,11 @@ A single-page vertical stack:
 └──────────────────────────────────────────────────────┘
 ```
 
-The page chrome is white (`#FFFFFF`) with dark text; each chart sits
-in its own dark navy panel (near-black, `#0E1117` or similar) with
-rounded corners. The white-page / dark-card split keeps the surface
-clean and professional while preserving the dark backgrounds the
+The dashboard uses a full-dark theme. The page is near-black grey
+(`#0A0D12` or similar) with light text. The verdict banner, KPI panels
+and each chart sit in their own dark card, one step lighter (`#131820`
+or similar), with rounded corners. Using one dark surface system keeps
+the dashboard visually unified, and it keeps the dark backgrounds the
 regime and signal palettes were designed against.
 
 A shared range selector (**1M / 6M / 1Y / 5Y / All since 2020**,
