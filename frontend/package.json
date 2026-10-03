@@ -4,7 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "copy-data": "node scripts/copy-data.js",
+    "predev": "npm run copy-data",
     "dev": "vite",
+    "prebuild": "npm run copy-data",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"

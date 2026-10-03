@@ -33,9 +33,8 @@ export default function App() {
 
   useEffect(() => {
     let cancelled = false;
-    // Dev-only: fetches the manually copied frontend/public/snapshot.json, a duplicate of
-    // data/dashboard/snapshot.json (see frontend/.gitignore). A build-time copy step will
-    // replace this manual one later — for now, re-copy the file by hand after each pipeline run.
+    // Fetches frontend/public/snapshot.json, copied from data/dashboard/snapshot.json by
+    // scripts/copy-data.js on every dev start/build (predev/prebuild; see frontend/.gitignore).
     fetch("/snapshot.json")
       .then((res) => {
         if (!res.ok) throw new Error(`Failed to load snapshot.json (${res.status})`);

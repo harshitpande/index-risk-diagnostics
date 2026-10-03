@@ -25,9 +25,8 @@ export default function DrawdownChart({ selection, zoomGroup }) {
 
   useEffect(() => {
     let cancelled = false;
-    // Dev-only: fetches the manually copied frontend/public/timeseries.json, a duplicate of
-    // data/dashboard/timeseries.json (see frontend/.gitignore). A build-time copy step will
-    // replace this manual one later — for now, re-copy the file by hand after each pipeline run.
+    // Fetches frontend/public/timeseries.json, copied from data/dashboard/timeseries.json by
+    // scripts/copy-data.js on every dev start/build (predev/prebuild; see frontend/.gitignore).
     fetch("/timeseries.json")
       .then((res) => {
         if (!res.ok) throw new Error(`Failed to load timeseries.json (${res.status})`);

@@ -26,9 +26,8 @@ export default function MonteCarloChart() {
 
   useEffect(() => {
     let cancelled = false;
-    // Dev-only: fetches the manually copied frontend/public/montecarlo.json, a duplicate of
-    // data/dashboard/montecarlo.json (see frontend/.gitignore). A build-time copy step will
-    // replace this manual one later — for now, re-copy the file by hand after each pipeline run.
+    // Fetches frontend/public/montecarlo.json, copied from data/dashboard/montecarlo.json by
+    // scripts/copy-data.js on every dev start/build (predev/prebuild; see frontend/.gitignore).
     fetch("/montecarlo.json")
       .then((res) => {
         if (!res.ok) throw new Error(`Failed to load montecarlo.json (${res.status})`);
