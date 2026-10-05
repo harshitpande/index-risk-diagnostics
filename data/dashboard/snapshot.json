@@ -2,7 +2,7 @@
   "date": "2026-10-01",
   "current_regime": "Pullback",
   "days_in_regime": 110,
-  "realized_vol": 0.09439192936028924,
+  "realized_vol": 0.09439192936029048,
   "drawdown": -0.14837890603846318,
   "reasoning": "Classified Pullback: drawdown of -14.8% is in the moderate (-5% to -15%) band, with volatility of 9.4% in the low (\u2264 12%) band \u2014 a normal-risk correction, not systemic stress.",
   "signals": {
